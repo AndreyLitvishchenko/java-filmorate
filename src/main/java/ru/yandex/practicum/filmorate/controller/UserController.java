@@ -20,7 +20,6 @@ import java.util.Map;
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
-
     private final Map<Integer, User> users = new HashMap<>();
     private int nextId = 1;
 
@@ -54,27 +53,21 @@ public class UserController {
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             throw new ValidationException("Email cannot be empty");
         }
-        
         if (!user.getEmail().contains("@")) {
             throw new ValidationException("Email must contain @ symbol");
         }
-        
         if (user.getLogin() == null || user.getLogin().isBlank()) {
             throw new ValidationException("Login cannot be empty");
         }
-        
         if (user.getLogin().contains(" ")) {
             throw new ValidationException("Login cannot contain spaces");
         }
-        
         if (user.getBirthday() == null) {
             throw new ValidationException("Birthday cannot be null");
         }
-        
         if (user.getBirthday().isAfter(LocalDate.now())) {
             throw new ValidationException("Birthday cannot be in the future");
         }
-        
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.info("User name is empty, using login instead: {}", user.getLogin());
