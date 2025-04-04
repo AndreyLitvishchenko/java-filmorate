@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,14 @@ public class ErrorHandler {
         return Map.of(ERROR_KEY, e.getMessage());
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleConstraintViolationException(final ConstraintViolationException e) {
+        String errorMessage = e.getConstraintViolations().iterator().next().getMessage();
+        log.error("Constraint violation: {}", errorMessage);
+        return Map.of(ERROR_KEY, errorMessage);
+    }
+
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFoundException(final NotFoundException e) {
@@ -32,8 +41,9 @@ public class ErrorHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
-        log.error("Validation error: {}", e.getMessage());
-        return Map.of(ERROR_KEY, e.getMessage());
+        String errorMessage = e.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
+        log.error("Validation error: {}", errorMessage);
+        return Map.of(ERROR_KEY, errorMessage);
     }
 
     @ExceptionHandler(Exception.class)

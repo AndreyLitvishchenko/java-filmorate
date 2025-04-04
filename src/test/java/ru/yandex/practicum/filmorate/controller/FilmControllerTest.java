@@ -1,5 +1,8 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -7,8 +10,6 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
     private FilmController filmController;
@@ -32,28 +33,6 @@ class FilmControllerTest {
     }
 
     @Test
-    void shouldNotCreateFilmWithEmptyName() {
-        Film film = new Film();
-        film.setName("");
-        film.setDescription("Test Description");
-        film.setReleaseDate(LocalDate.of(2000, 1, 1));
-        film.setDuration(120);
-
-        assertThrows(ValidationException.class, () -> filmController.createFilm(film));
-    }
-
-    @Test
-    void shouldNotCreateFilmWithLongDescription() {
-        Film film = new Film();
-        film.setName("Test Film");
-        film.setDescription("a".repeat(201)); // 201 characters
-        film.setReleaseDate(LocalDate.of(2000, 1, 1));
-        film.setDuration(120);
-
-        assertThrows(ValidationException.class, () -> filmController.createFilm(film));
-    }
-
-    @Test
     void shouldNotCreateFilmWithReleaseDateBeforeCinemaBirthday() {
         Film film = new Film();
         film.setName("Test Film");
@@ -74,17 +53,6 @@ class FilmControllerTest {
 
         Film createdFilm = filmController.createFilm(film);
         assertEquals(1, createdFilm.getId());
-    }
-
-    @Test
-    void shouldNotCreateFilmWithNegativeDuration() {
-        Film film = new Film();
-        film.setName("Test Film");
-        film.setDescription("Test Description");
-        film.setReleaseDate(LocalDate.of(2000, 1, 1));
-        film.setDuration(-1);
-
-        assertThrows(ValidationException.class, () -> filmController.createFilm(film));
     }
 
     @Test

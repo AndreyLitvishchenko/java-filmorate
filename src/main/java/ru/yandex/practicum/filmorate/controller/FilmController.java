@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +33,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film createFilm(@RequestBody Film film) {
+    public Film createFilm(@Valid @RequestBody Film film) {
         validateFilm(film);
         film.setId(nextId++);
         films.put(film.getId(), film);
@@ -41,7 +42,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film updateFilm(@RequestBody Film film) {
+    public Film updateFilm(@Valid @RequestBody Film film) {
         if (film.getId() <= 0 || !films.containsKey(film.getId())) {
             throw new NotFoundException("Film with ID " + film.getId() + " not found");
         }
@@ -52,20 +53,8 @@ public class FilmController {
     }
 
     private void validateFilm(Film film) {
-        if (film.getName() == null || film.getName().isBlank()) {
-            throw new ValidationException("Film name cannot be empty");
-        }
-        if (film.getDescription() != null && film.getDescription().length() > 200) {
-            throw new ValidationException("Film description cannot be longer than 200 characters");
-        }
-        if (film.getReleaseDate() == null) {
-            throw new ValidationException("Release date cannot be null");
-        }
         if (film.getReleaseDate().isBefore(CINEMA_BIRTHDAY)) {
             throw new ValidationException("Release date cannot be earlier than " + CINEMA_BIRTHDAY);
-        }
-        if (film.getDuration() <= 0) {
-            throw new ValidationException("Film duration must be positive");
         }
     }
 }

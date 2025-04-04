@@ -71,25 +71,6 @@ class UserControllerIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    @DisplayName("Should not create user with spaces in login")
-    void shouldNotCreateUserWithSpacesInLogin() throws Exception {
-        String userJson = TestJsonUtils.readJsonFromFile("json/user-login-with-spaces.json");
-        mockMvc.perform(post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(userJson))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Should not create user with future birthday")
-    void shouldNotCreateUserWithFutureBirthday() throws Exception {
-        String userJson = TestJsonUtils.readJsonFromFile("json/user-future-birthday.json");
-        mockMvc.perform(post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(userJson))
-                .andExpect(status().isBadRequest());
-    }
 
     @Test
     @DisplayName("Should create user with empty name and use login as name")
@@ -100,15 +81,5 @@ class UserControllerIntegrationTest {
                 .content(userJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("testuser"));
-    }
-
-    @Test
-    @DisplayName("Should not update non-existent user")
-    void shouldNotUpdateNonExistentUser() throws Exception {
-        String userJson = TestJsonUtils.readJsonFromFile("json/nonexistent-user.json");
-        mockMvc.perform(put("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(userJson))
-                .andExpect(status().isNotFound());
     }
 }

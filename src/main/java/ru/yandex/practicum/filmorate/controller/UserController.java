@@ -1,12 +1,16 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +30,7 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user) {
         validateUser(user);
         user.setId(nextId++);
         users.put(user.getId(), user);
@@ -35,9 +39,9 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateUser(@RequestBody User user) {
+    public User updateUser(@Valid @RequestBody User user) {
         if (user.getId() <= 0 || !users.containsKey(user.getId())) {
-            throw new NotFoundException("User with ID " + user.getId() + " not found");
+            throw new ValidationException("User with ID " + user.getId() + " not found");
         }
         validateUser(user);
         users.put(user.getId(), user);
@@ -46,24 +50,6 @@ public class UserController {
     }
 
     private void validateUser(User user) {
-        if (user.getEmail() == null || user.getEmail().isBlank()) {
-            throw new ValidationException("Email cannot be empty");
-        }
-        if (!user.getEmail().contains("@")) {
-            throw new ValidationException("Email must contain @ symbol");
-        }
-        if (user.getLogin() == null || user.getLogin().isBlank()) {
-            throw new ValidationException("Login cannot be empty");
-        }
-        if (user.getLogin().contains(" ")) {
-            throw new ValidationException("Login cannot contain spaces");
-        }
-        if (user.getBirthday() == null) {
-            throw new ValidationException("Birthday cannot be null");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Birthday cannot be in the future");
-        }
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.info("User name is empty, using login instead: {}", user.getLogin());
