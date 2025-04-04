@@ -33,7 +33,6 @@ class UserControllerIntegrationTest {
     @DisplayName("Should create a valid user")
     void shouldCreateUser() throws Exception {
         String userJson = TestJsonUtils.readJsonFromFile("json/valid-user.json");
-        
         mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))
@@ -46,7 +45,6 @@ class UserControllerIntegrationTest {
     @DisplayName("Should not create user with empty email")
     void shouldNotCreateUserWithEmptyEmail() throws Exception {
         String userJson = TestJsonUtils.readJsonFromFile("json/user-empty-email.json");
-        
         mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))
@@ -57,7 +55,6 @@ class UserControllerIntegrationTest {
     @DisplayName("Should not create user with invalid email")
     void shouldNotCreateUserWithInvalidEmail() throws Exception {
         String userJson = TestJsonUtils.readJsonFromFile("json/user-invalid-email.json");
-        
         mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))
@@ -68,7 +65,6 @@ class UserControllerIntegrationTest {
     @DisplayName("Should not create user with empty login")
     void shouldNotCreateUserWithEmptyLogin() throws Exception {
         String userJson = TestJsonUtils.readJsonFromFile("json/user-empty-login.json");
-        
         mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))
@@ -79,7 +75,6 @@ class UserControllerIntegrationTest {
     @DisplayName("Should not create user with spaces in login")
     void shouldNotCreateUserWithSpacesInLogin() throws Exception {
         String userJson = TestJsonUtils.readJsonFromFile("json/user-login-with-spaces.json");
-        
         mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))
@@ -90,7 +85,6 @@ class UserControllerIntegrationTest {
     @DisplayName("Should not create user with future birthday")
     void shouldNotCreateUserWithFutureBirthday() throws Exception {
         String userJson = TestJsonUtils.readJsonFromFile("json/user-future-birthday.json");
-        
         mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))
@@ -101,7 +95,6 @@ class UserControllerIntegrationTest {
     @DisplayName("Should create user with empty name and use login as name")
     void shouldCreateUserWithEmptyNameAndUseLoginAsName() throws Exception {
         String userJson = TestJsonUtils.readJsonFromFile("json/user-empty-name.json");
-        
         mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))

@@ -44,7 +44,7 @@ class UserControllerTest {
     @Test
     void shouldNotCreateUserWithInvalidEmail() {
         User user = new User();
-        user.setEmail("invalid-email"); // No @ symbol
+        user.setEmail("invalid-email");
         user.setLogin("testuser");
         user.setName("Test User");
         user.setBirthday(LocalDate.of(2000, 1, 1));
@@ -67,7 +67,7 @@ class UserControllerTest {
     void shouldNotCreateUserWithLoginContainingSpaces() {
         User user = new User();
         user.setEmail("test@example.com");
-        user.setLogin("test user"); // Contains space
+        user.setLogin("test user");
         user.setName("Test User");
         user.setBirthday(LocalDate.of(2000, 1, 1));
 
@@ -79,7 +79,7 @@ class UserControllerTest {
         User user = new User();
         user.setEmail("test@example.com");
         user.setLogin("testuser");
-        user.setName(""); // Empty name
+        user.setName("");
         user.setBirthday(LocalDate.of(2000, 1, 1));
 
         User createdUser = userController.createUser(user);
@@ -91,7 +91,7 @@ class UserControllerTest {
         User user = new User();
         user.setEmail("test@example.com");
         user.setLogin("testuser");
-        user.setName(null); // Null name
+        user.setName(null);
         user.setBirthday(LocalDate.of(2000, 1, 1));
 
         User createdUser = userController.createUser(user);
@@ -111,7 +111,6 @@ class UserControllerTest {
 
     @Test
     void shouldUpdateUser() {
-        // Create user first
         User user = new User();
         user.setEmail("test@example.com");
         user.setLogin("testuser");
@@ -119,7 +118,6 @@ class UserControllerTest {
         user.setBirthday(LocalDate.of(2000, 1, 1));
         User createdUser = userController.createUser(user);
 
-        // Update user
         createdUser.setName("Updated User");
         User updatedUser = userController.updateUser(createdUser);
         assertEquals("Updated User", updatedUser.getName());

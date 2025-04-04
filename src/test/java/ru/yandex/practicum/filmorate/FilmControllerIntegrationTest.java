@@ -33,7 +33,6 @@ class FilmControllerIntegrationTest {
     @DisplayName("Should create a valid film")
     void shouldCreateFilm() throws Exception {
         String filmJson = TestJsonUtils.readJsonFromFile("json/valid-film.json");
-        
         mockMvc.perform(post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(filmJson))
@@ -46,7 +45,6 @@ class FilmControllerIntegrationTest {
     @DisplayName("Should not create film with empty name")
     void shouldNotCreateFilmWithEmptyName() throws Exception {
         String filmJson = TestJsonUtils.readJsonFromFile("json/film-empty-name.json");
-        
         mockMvc.perform(post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(filmJson))
@@ -57,7 +55,6 @@ class FilmControllerIntegrationTest {
     @DisplayName("Should not create film with negative duration")
     void shouldNotCreateFilmWithNegativeDuration() throws Exception {
         String filmJson = TestJsonUtils.readJsonFromFile("json/film-negative-duration.json");
-        
         mockMvc.perform(post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(filmJson))
