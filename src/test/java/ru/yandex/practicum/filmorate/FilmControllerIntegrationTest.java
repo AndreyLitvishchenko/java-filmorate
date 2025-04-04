@@ -50,7 +50,7 @@ class FilmControllerIntegrationTest {
                 .content(filmJson))
                 .andExpect(status().isBadRequest());
     }
-    
+
     @Test
     @DisplayName("Should not create film with negative duration")
     void shouldNotCreateFilmWithNegativeDuration() throws Exception {

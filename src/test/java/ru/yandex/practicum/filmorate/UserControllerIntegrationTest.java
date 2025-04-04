@@ -50,7 +50,7 @@ class UserControllerIntegrationTest {
                 .content(userJson))
                 .andExpect(status().isBadRequest());
     }
-    
+
     @Test
     @DisplayName("Should not create user with invalid email")
     void shouldNotCreateUserWithInvalidEmail() throws Exception {
@@ -60,7 +60,7 @@ class UserControllerIntegrationTest {
                 .content(userJson))
                 .andExpect(status().isBadRequest());
     }
-    
+
     @Test
     @DisplayName("Should not create user with empty login")
     void shouldNotCreateUserWithEmptyLogin() throws Exception {
@@ -70,7 +70,7 @@ class UserControllerIntegrationTest {
                 .content(userJson))
                 .andExpect(status().isBadRequest());
     }
-    
+
     @Test
     @DisplayName("Should not create user with spaces in login")
     void shouldNotCreateUserWithSpacesInLogin() throws Exception {
@@ -80,7 +80,7 @@ class UserControllerIntegrationTest {
                 .content(userJson))
                 .andExpect(status().isBadRequest());
     }
-    
+
     @Test
     @DisplayName("Should not create user with future birthday")
     void shouldNotCreateUserWithFutureBirthday() throws Exception {
