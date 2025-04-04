@@ -73,4 +73,4 @@ public class UserController {
             log.info("User name is empty, using login instead: {}", user.getLogin());
         }
     }
-} 
+}
