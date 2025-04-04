@@ -71,7 +71,6 @@ class UserControllerIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
-
     @Test
     @DisplayName("Should create user with empty name and use login as name")
     void shouldCreateUserWithEmptyNameAndUseLoginAsName() throws Exception {
