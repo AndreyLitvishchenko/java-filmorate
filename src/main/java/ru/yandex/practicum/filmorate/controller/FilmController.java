@@ -54,19 +54,15 @@ public class FilmController {
         if (film.getName() == null || film.getName().isBlank()) {
             throw new ValidationException("Film name cannot be empty");
         }
-        
         if (film.getDescription() != null && film.getDescription().length() > 200) {
             throw new ValidationException("Film description cannot be longer than 200 characters");
         }
-        
         if (film.getReleaseDate() == null) {
             throw new ValidationException("Release date cannot be null");
         }
-        
         if (film.getReleaseDate().isBefore(CINEMA_BIRTHDAY)) {
             throw new ValidationException("Release date cannot be earlier than " + CINEMA_BIRTHDAY);
         }
-        
         if (film.getDuration() <= 0) {
             throw new ValidationException("Film duration must be positive");
         }
