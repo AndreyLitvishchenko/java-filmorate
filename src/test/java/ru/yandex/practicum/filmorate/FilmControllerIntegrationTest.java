@@ -60,4 +60,14 @@ class FilmControllerIntegrationTest {
                 .content(filmJson))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @DisplayName("Should not update non-existent film")
+    void shouldNotUpdateNonExistentFilm() throws Exception {
+        String filmJson = TestJsonUtils.readJsonFromFile("json/nonexistent-film.json");
+        mockMvc.perform(put("/films")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(filmJson))
+                .andExpect(status().isNotFound());
+    }
 }

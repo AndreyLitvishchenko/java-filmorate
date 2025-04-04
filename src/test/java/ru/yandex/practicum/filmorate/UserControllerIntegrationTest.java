@@ -101,4 +101,14 @@ class UserControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("testuser"));
     }
+
+    @Test
+    @DisplayName("Should not update non-existent user")
+    void shouldNotUpdateNonExistentUser() throws Exception {
+        String userJson = TestJsonUtils.readJsonFromFile("json/nonexistent-user.json");
+        mockMvc.perform(put("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson))
+                .andExpect(status().isNotFound());
+    }
 }
