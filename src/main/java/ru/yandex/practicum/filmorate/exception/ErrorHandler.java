@@ -35,4 +35,4 @@ public class ErrorHandler {
         log.error("Internal server error: {}", e.getMessage());
         return Map.of(ERROR_KEY, "Internal server error");
     }
-} 
+}

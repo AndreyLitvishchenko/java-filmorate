@@ -136,4 +136,4 @@ class UserControllerTest {
 
         assertThrows(ValidationException.class, () -> userController.updateUser(user));
     }
-} 
+}

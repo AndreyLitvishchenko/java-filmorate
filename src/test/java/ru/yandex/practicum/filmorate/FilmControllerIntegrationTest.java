@@ -63,4 +63,4 @@ class FilmControllerIntegrationTest {
                 .content(filmJson))
                 .andExpect(status().isBadRequest());
     }
-} 
+}

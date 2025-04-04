@@ -108,4 +108,4 @@ class UserControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("testuser"));
     }
-} 
+}
