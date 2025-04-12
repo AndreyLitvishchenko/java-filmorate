@@ -1,20 +1,27 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
 
+@ExtendWith(MockitoExtension.class)
 class UserControllerTest {
-    private UserController userController;
+    @Mock
+    private UserService userService;
 
-    @BeforeEach
-    void setUp() {
-        userController = new UserController();
-    }
+    @InjectMocks
+    private UserController userController;
 
     @Test
     void shouldCreateValidUser() {
@@ -24,7 +31,17 @@ class UserControllerTest {
         user.setName("Test User");
         user.setBirthday(LocalDate.of(2000, 1, 1));
 
+        User expectedUser = new User();
+        expectedUser.setId(1);
+        expectedUser.setEmail("test@example.com");
+        expectedUser.setLogin("testuser");
+        expectedUser.setName("Test User");
+        expectedUser.setBirthday(LocalDate.of(2000, 1, 1));
+
+        when(userService.addUser(any(User.class))).thenReturn(expectedUser);
+
         User createdUser = userController.createUser(user);
+
         assertEquals(1, createdUser.getId());
         assertEquals("Test User", createdUser.getName());
     }
@@ -37,7 +54,17 @@ class UserControllerTest {
         user.setName("");
         user.setBirthday(LocalDate.of(2000, 1, 1));
 
+        User expectedUser = new User();
+        expectedUser.setId(1);
+        expectedUser.setEmail("test@example.com");
+        expectedUser.setLogin("testuser");
+        expectedUser.setName("testuser");
+        expectedUser.setBirthday(LocalDate.of(2000, 1, 1));
+
+        when(userService.addUser(any(User.class))).thenReturn(expectedUser);
+
         User createdUser = userController.createUser(user);
+
         assertEquals("testuser", createdUser.getName());
     }
 
@@ -49,6 +76,14 @@ class UserControllerTest {
         user.setName(null);
         user.setBirthday(LocalDate.of(2000, 1, 1));
 
+        User expectedUser = new User();
+        expectedUser.setId(1);
+        expectedUser.setEmail("test@example.com");
+        expectedUser.setLogin("testuser");
+        expectedUser.setName("testuser");
+        expectedUser.setBirthday(LocalDate.of(2000, 1, 1));
+
+        when(userService.addUser(any(User.class))).thenReturn(expectedUser);
         User createdUser = userController.createUser(user);
         assertEquals("testuser", createdUser.getName());
     }
@@ -56,14 +91,14 @@ class UserControllerTest {
     @Test
     void shouldUpdateUser() {
         User user = new User();
+        user.setId(1);
         user.setEmail("test@example.com");
         user.setLogin("testuser");
-        user.setName("Test User");
+        user.setName("Updated User");
         user.setBirthday(LocalDate.of(2000, 1, 1));
-        User createdUser = userController.createUser(user);
 
-        createdUser.setName("Updated User");
-        User updatedUser = userController.updateUser(createdUser);
+        when(userService.updateUser(any(User.class))).thenReturn(user);
+        User updatedUser = userController.updateUser(user);
         assertEquals("Updated User", updatedUser.getName());
     }
 }
