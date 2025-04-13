@@ -20,7 +20,7 @@ public class ErrorHandler {
     @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationException(final ValidationException e) {
-        log.error("Validation error: {}", e.getMessage());
+        log.error("Validation error: {}", e.getMessage(), e);
         return Map.of(ERROR_KEY, e.getMessage());
     }
 
@@ -28,14 +28,14 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleConstraintViolationException(final ConstraintViolationException e) {
         String errorMessage = e.getConstraintViolations().iterator().next().getMessage();
-        log.error("Constraint violation: {}", errorMessage);
+        log.error("Constraint violation: {}", errorMessage, e);
         return Map.of(ERROR_KEY, errorMessage);
     }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFoundException(final NotFoundException e) {
-        log.error("Not found error: {}", e.getMessage());
+        log.error("Not found error: {}", e.getMessage(), e);
         return Map.of(ERROR_KEY, e.getMessage());
     }
 
@@ -43,7 +43,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
         String errorMessage = e.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
-        log.error("Validation error: {}", errorMessage);
+        log.error("Validation error: {}", errorMessage, e);
         return Map.of(ERROR_KEY, errorMessage);
     }
 
