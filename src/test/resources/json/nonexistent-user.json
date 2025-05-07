@@ -1,0 +1,7 @@
+{
+    "id": 999,
+    "email": "nonexistent@example.com",
+    "login": "nonexistentuser",
+    "name": "Non-existent User",
+    "birthday": "2000-01-01"
+}

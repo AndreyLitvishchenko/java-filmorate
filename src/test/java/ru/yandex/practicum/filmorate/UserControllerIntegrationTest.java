@@ -1,5 +1,12 @@
 package ru.yandex.practicum.filmorate;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.yandex.practicum.filmorate.util.TestJsonUtils;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import ru.yandex.practicum.filmorate.util.TestJsonUtils;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -80,5 +85,35 @@ class UserControllerIntegrationTest {
                 .content(userJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("testuser"));
+    }
+
+    @Test
+    @DisplayName("Should not update non-existent user")
+    void shouldNotUpdateNonExistentUser() throws Exception {
+        String userJson = TestJsonUtils.readJsonFromFile("json/nonexistent-user.json");
+        mockMvc.perform(put("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Should not create user with login containing spaces")
+    void shouldNotCreateUserWithLoginContainingSpaces() throws Exception {
+        String userJson = TestJsonUtils.readJsonFromFile("json/user-login-with-spaces.json");
+        mockMvc.perform(post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should not create user with future birthday")
+    void shouldNotCreateUserWithFutureBirthday() throws Exception {
+        String userJson = TestJsonUtils.readJsonFromFile("json/user-future-birthday.json");
+        mockMvc.perform(post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson))
+                .andExpect(status().isBadRequest());
     }
 }
