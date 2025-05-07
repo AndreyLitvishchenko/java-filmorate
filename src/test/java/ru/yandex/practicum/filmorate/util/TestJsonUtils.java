@@ -13,7 +13,7 @@ public class TestJsonUtils {
 
     /**
      * Загружает содержимое JSON файла в виде строки
-     * 
+     *
      * @param filePath путь к файлу в папке resources
      * @return содержимое файла в виде строки
      */
