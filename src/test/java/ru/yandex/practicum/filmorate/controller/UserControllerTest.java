@@ -1,28 +1,47 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.model.User;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
+
+@ExtendWith(MockitoExtension.class)
 class UserControllerTest {
+    @Mock
+    private UserStorage userStorage;
+
+    @InjectMocks
     private UserController userController;
+
+    private User user;
 
     @BeforeEach
     void setUp() {
-        userController = new UserController();
-    }
-
-    @Test
-    void shouldCreateValidUser() {
-        User user = new User();
+        user = new User();
         user.setEmail("test@example.com");
         user.setLogin("testuser");
         user.setName("Test User");
         user.setBirthday(LocalDate.of(2000, 1, 1));
+    }
+
+    @Test
+    void shouldCreateValidUser() {
+        when(userStorage.create(any(User.class))).thenAnswer(invocation -> {
+            User u = invocation.getArgument(0);
+            u.setId(1);
+            return u;
+        });
 
         User createdUser = userController.createUser(user);
         assertEquals(1, createdUser.getId());
@@ -31,11 +50,13 @@ class UserControllerTest {
 
     @Test
     void shouldCreateUserWithEmptyNameAndSetLoginAsName() {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("testuser");
         user.setName("");
-        user.setBirthday(LocalDate.of(2000, 1, 1));
+
+        when(userStorage.create(any(User.class))).thenAnswer(invocation -> {
+            User u = invocation.getArgument(0);
+            u.setId(1);
+            return u;
+        });
 
         User createdUser = userController.createUser(user);
         assertEquals("testuser", createdUser.getName());
@@ -43,11 +64,13 @@ class UserControllerTest {
 
     @Test
     void shouldCreateUserWithNullNameAndSetLoginAsName() {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("testuser");
         user.setName(null);
-        user.setBirthday(LocalDate.of(2000, 1, 1));
+
+        when(userStorage.create(any(User.class))).thenAnswer(invocation -> {
+            User u = invocation.getArgument(0);
+            u.setId(1);
+            return u;
+        });
 
         User createdUser = userController.createUser(user);
         assertEquals("testuser", createdUser.getName());
@@ -55,15 +78,12 @@ class UserControllerTest {
 
     @Test
     void shouldUpdateUser() {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("testuser");
-        user.setName("Test User");
-        user.setBirthday(LocalDate.of(2000, 1, 1));
-        User createdUser = userController.createUser(user);
+        user.setId(1);
+        user.setName("Updated User");
 
-        createdUser.setName("Updated User");
-        User updatedUser = userController.updateUser(createdUser);
+        when(userStorage.update(any(User.class))).thenReturn(user);
+
+        User updatedUser = userController.updateUser(user);
         assertEquals("Updated User", updatedUser.getName());
     }
 }

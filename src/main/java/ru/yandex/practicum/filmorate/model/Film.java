@@ -1,11 +1,14 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Data;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
+import lombok.Data;
 
 @Data
 public class Film {
@@ -18,4 +21,7 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "Film duration must be positive")
     private int duration;
+    @NotNull
+    private Mpa mpa;
+    private List<Genre> genres = new ArrayList<>();
 }
