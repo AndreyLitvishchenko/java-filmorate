@@ -1,19 +1,19 @@
 package ru.yandex.practicum.filmorate.util;
 
-import org.springframework.core.io.ClassPathResource;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+import org.springframework.core.io.ClassPathResource;
+
 public class TestJsonUtils {
 
     private TestJsonUtils() {
-        // Утилитный класс
     }
 
     /**
      * Загружает содержимое JSON файла в виде строки
+     * 
      * @param filePath путь к файлу в папке resources
      * @return содержимое файла в виде строки
      */
