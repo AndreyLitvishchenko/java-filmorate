@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.model;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,5 +21,7 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "Film duration must be positive")
     private int duration;
-    private Set<Integer> likes = new HashSet<>();
+    @NotNull
+    private Mpa mpa;
+    private List<Genre> genres = new ArrayList<>();
 }

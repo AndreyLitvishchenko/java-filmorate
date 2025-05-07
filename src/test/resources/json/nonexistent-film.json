@@ -3,5 +3,9 @@
   "name": "Non-existent Film",
   "description": "This film does not exist",
   "releaseDate": "2000-01-01",
-  "duration": 120
-} 
+  "duration": 120,
+  "mpa": {
+    "id": 1,
+    "name": "G"
+  }
+}

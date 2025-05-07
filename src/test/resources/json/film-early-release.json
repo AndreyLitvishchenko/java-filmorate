@@ -2,5 +2,9 @@
   "name": "Test Film",
   "description": "Test Description",
   "releaseDate": "1895-12-27",
-  "duration": 120
-} 
+  "duration": 120,
+  "mpa": {
+    "id": 1,
+    "name": "G"
+  }
+}

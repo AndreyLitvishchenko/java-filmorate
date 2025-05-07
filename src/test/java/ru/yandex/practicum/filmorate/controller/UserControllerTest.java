@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,93 +14,75 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
-
-import java.time.LocalDate;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
     @Mock
-    private UserService userService;
+    private UserStorage userStorage;
 
     @InjectMocks
     private UserController userController;
 
-    @Test
-    void shouldCreateValidUser() {
-        User user = new User();
+    private User user;
+
+    @BeforeEach
+    void setUp() {
+        user = new User();
         user.setEmail("test@example.com");
         user.setLogin("testuser");
         user.setName("Test User");
         user.setBirthday(LocalDate.of(2000, 1, 1));
+    }
 
-        User expectedUser = new User();
-        expectedUser.setId(1);
-        expectedUser.setEmail("test@example.com");
-        expectedUser.setLogin("testuser");
-        expectedUser.setName("Test User");
-        expectedUser.setBirthday(LocalDate.of(2000, 1, 1));
-
-        when(userService.addUser(any(User.class))).thenReturn(expectedUser);
+    @Test
+    void shouldCreateValidUser() {
+        when(userStorage.create(any(User.class))).thenAnswer(invocation -> {
+            User u = invocation.getArgument(0);
+            u.setId(1);
+            return u;
+        });
 
         User createdUser = userController.createUser(user);
-
         assertEquals(1, createdUser.getId());
         assertEquals("Test User", createdUser.getName());
     }
 
     @Test
     void shouldCreateUserWithEmptyNameAndSetLoginAsName() {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("testuser");
         user.setName("");
-        user.setBirthday(LocalDate.of(2000, 1, 1));
 
-        User expectedUser = new User();
-        expectedUser.setId(1);
-        expectedUser.setEmail("test@example.com");
-        expectedUser.setLogin("testuser");
-        expectedUser.setName("testuser");
-        expectedUser.setBirthday(LocalDate.of(2000, 1, 1));
-
-        when(userService.addUser(any(User.class))).thenReturn(expectedUser);
+        when(userStorage.create(any(User.class))).thenAnswer(invocation -> {
+            User u = invocation.getArgument(0);
+            u.setId(1);
+            return u;
+        });
 
         User createdUser = userController.createUser(user);
-
         assertEquals("testuser", createdUser.getName());
     }
 
     @Test
     void shouldCreateUserWithNullNameAndSetLoginAsName() {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("testuser");
         user.setName(null);
-        user.setBirthday(LocalDate.of(2000, 1, 1));
 
-        User expectedUser = new User();
-        expectedUser.setId(1);
-        expectedUser.setEmail("test@example.com");
-        expectedUser.setLogin("testuser");
-        expectedUser.setName("testuser");
-        expectedUser.setBirthday(LocalDate.of(2000, 1, 1));
+        when(userStorage.create(any(User.class))).thenAnswer(invocation -> {
+            User u = invocation.getArgument(0);
+            u.setId(1);
+            return u;
+        });
 
-        when(userService.addUser(any(User.class))).thenReturn(expectedUser);
         User createdUser = userController.createUser(user);
         assertEquals("testuser", createdUser.getName());
     }
 
     @Test
     void shouldUpdateUser() {
-        User user = new User();
         user.setId(1);
-        user.setEmail("test@example.com");
-        user.setLogin("testuser");
         user.setName("Updated User");
-        user.setBirthday(LocalDate.of(2000, 1, 1));
 
-        when(userService.updateUser(any(User.class))).thenReturn(user);
+        when(userStorage.update(any(User.class))).thenReturn(user);
+
         User updatedUser = userController.updateUser(user);
         assertEquals("Updated User", updatedUser.getName());
     }

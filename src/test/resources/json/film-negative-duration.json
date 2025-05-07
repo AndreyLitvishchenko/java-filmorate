@@ -2,5 +2,9 @@
   "name": "Test Film",
   "description": "Test Description",
   "releaseDate": "2000-01-01",
-  "duration": -1
-} 
+  "duration": -1,
+  "mpa": {
+    "id": 1,
+    "name": "G"
+  }
+}
