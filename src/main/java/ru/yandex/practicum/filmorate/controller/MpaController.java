@@ -10,22 +10,22 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.MpaStorage;
+import ru.yandex.practicum.filmorate.service.MpaService;
 
 @RestController
 @RequestMapping("/mpa")
 @RequiredArgsConstructor
 public class MpaController {
-    private final MpaStorage mpaStorage;
+    private final MpaService mpaService;
 
     @GetMapping
     public List<Mpa> getAllMpa() {
-        return mpaStorage.findAll();
+        return mpaService.getAllMpa();
     }
 
     @GetMapping("/{id}")
     public Mpa getMpaById(@PathVariable int id) {
-        return mpaStorage.findMpaById(id)
+        return mpaService.getMpaById(id)
                 .orElseThrow(() -> new NotFoundException("MPA with ID " + id + " not found"));
     }
 }

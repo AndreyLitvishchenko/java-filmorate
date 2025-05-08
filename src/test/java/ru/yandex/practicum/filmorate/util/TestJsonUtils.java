@@ -11,12 +11,6 @@ public class TestJsonUtils {
     private TestJsonUtils() {
     }
 
-    /**
-     * Загружает содержимое JSON файла в виде строки
-     *
-     * @param filePath путь к файлу в папке resources
-     * @return содержимое файла в виде строки
-     */
     public static String readJsonFromFile(String filePath) {
         try {
             ClassPathResource resource = new ClassPathResource(filePath);

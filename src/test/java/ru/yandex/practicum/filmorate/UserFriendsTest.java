@@ -30,7 +30,6 @@ class UserFriendsTest {
         @Test
         @DisplayName("Should be able to get user by id")
         void shouldGetUserById() throws Exception {
-                // Создаем пользователя
                 String userJson = TestJsonUtils.readJsonFromFile("json/valid-user.json");
                 String response = mockMvc.perform(post("/users")
                                 .contentType(MediaType.APPLICATION_JSON)

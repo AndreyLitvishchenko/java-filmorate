@@ -13,13 +13,14 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 
 import lombok.RequiredArgsConstructor;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.impl.UserDbStorage;
 
 @JdbcTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Import({ UserDbStorage.class })
+@Import({ UserDbStorage.class, UserMapper.class })
 class FilmorateApplicationTests {
 	private final UserDbStorage userStorage;
 
