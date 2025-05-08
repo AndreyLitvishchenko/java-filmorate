@@ -41,7 +41,6 @@ public class FilmDbStorage implements FilmStorage {
             return ps;
         }, keyHolder);
         film.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
-
         log.info("Film created with ID: {}", film.getId());
         return film;
     }
@@ -56,37 +55,29 @@ public class FilmDbStorage implements FilmStorage {
                 film.getDuration(),
                 film.getMpa().getId(),
                 film.getId());
-
         if (rowsUpdated == 0) {
             throw new NotFoundException("Film with ID " + film.getId() + " not found");
         }
-
         log.info("Film updated with ID: {}", film.getId());
         return film;
     }
 
     @Override
     public Optional<Film> findFilmById(int id) {
-                        
         List<Film> films = jdbcTemplate.query(
                 "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, "
                         + "f.mpa_id, m.name as mpa_name FROM films f "
                         + "JOIN mpa m ON f.mpa_id = m.mpa_id "
-                        + "WHERE f.film_id = ?",
-                filmMapper,
-                id);
-
+                        + "WHERE f.film_id = ?", filmMapper, id);
         return films.isEmpty() ? Optional.empty() : Optional.of(films.get(0));
     }
 
     @Override
     public List<Film> findAll() {
-                        
         return jdbcTemplate.query(
                 "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, "
                         + "f.mpa_id, m.name as mpa_name FROM films f " +
-                        "JOIN mpa m ON f.mpa_id = m.mpa_id",
-                filmMapper);
+                        "JOIN mpa m ON f.mpa_id = m.mpa_id", filmMapper);
     }
 
     @Override
@@ -107,7 +98,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getMostPopularFilms(int count) {
-                        
         return jdbcTemplate.query(
                 "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, " +
                         "m.name as mpa_name, COUNT(l.user_id) as likes_count " +
@@ -116,7 +106,6 @@ public class FilmDbStorage implements FilmStorage {
                         "LEFT JOIN likes l ON f.film_id = l.film_id " +
                         "GROUP BY f.film_id " +
                         "ORDER BY likes_count DESC " +
-                        "LIMIT ?",
-                filmMapper, count);
+                        "LIMIT ?", filmMapper, count);
     }
 }
