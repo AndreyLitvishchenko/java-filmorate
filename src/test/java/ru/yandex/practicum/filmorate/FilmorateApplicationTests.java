@@ -19,7 +19,7 @@ import ru.yandex.practicum.filmorate.storage.impl.UserDbStorage;
 
 @JdbcTest
 @AutoConfigureTestDatabase
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 @Import({ UserDbStorage.class, UserMapper.class })
 class FilmorateApplicationTests {
 	private final UserDbStorage userStorage;
