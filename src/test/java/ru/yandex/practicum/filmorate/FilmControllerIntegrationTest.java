@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -22,10 +23,10 @@ import ru.yandex.practicum.filmorate.util.TestJsonUtils;
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@RequiredArgsConstructor
 class FilmControllerIntegrationTest {
 
-        private final MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
         @Test
         @DisplayName("Should return empty film list when no films exist")
