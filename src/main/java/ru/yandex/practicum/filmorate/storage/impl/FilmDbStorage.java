@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -70,9 +69,10 @@ public class FilmDbStorage implements FilmStorage {
     public Optional<Film> findFilmById(int id) {
                         
         List<Film> films = jdbcTemplate.query(
-                "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, m.name as mpa_name FROM films f " +
-                        "JOIN mpa m ON f.mpa_id = m.mpa_id " +
-                        "WHERE f.film_id = ?",
+                "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, "
+                        + "f.mpa_id, m.name as mpa_name FROM films f "
+                        + "JOIN mpa m ON f.mpa_id = m.mpa_id "
+                        + "WHERE f.film_id = ?",
                 filmMapper,
                 id);
 
@@ -83,7 +83,8 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> findAll() {
                         
         return jdbcTemplate.query(
-                "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, m.name as mpa_name FROM films f " +
+                "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, "
+                        + "f.mpa_id, m.name as mpa_name FROM films f " +
                         "JOIN mpa m ON f.mpa_id = m.mpa_id",
                 filmMapper);
     }
@@ -108,7 +109,8 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> getMostPopularFilms(int count) {
                         
         return jdbcTemplate.query(
-                "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, m.name as mpa_name, COUNT(l.user_id) as likes_count " +
+                "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, " +
+                        "m.name as mpa_name, COUNT(l.user_id) as likes_count " +
                         "FROM films f " +
                         "JOIN mpa m ON f.mpa_id = m.mpa_id " +
                         "LEFT JOIN likes l ON f.film_id = l.film_id " +
