@@ -1,13 +1,45 @@
 package ru.yandex.practicum.filmorate;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+import java.time.LocalDate;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
+
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.impl.UserDbStorage;
+
+@JdbcTest
+@AutoConfigureTestDatabase
+@Import({ UserDbStorage.class, UserMapper.class })
 class FilmorateApplicationTests {
 
-	@Test
-	void contextLoads() {
+	@Autowired
+	private UserDbStorage userStorage;
+
+	@BeforeEach
+	void setUp() {
+		User user = new User();
+		user.setEmail("test@example.com");
+		user.setLogin("testuser");
+		user.setName("Test User");
+		user.setBirthday(LocalDate.of(2000, 1, 1));
+		userStorage.create(user);
 	}
 
+	@Test
+	public void testFindUserById() {
+		Optional<User> userOptional = userStorage.findUserById(1);
+
+		assertThat(userOptional)
+				.isPresent()
+				.hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("id", 1));
+	}
 }

@@ -1,19 +1,18 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.storage;
 
 import java.util.List;
 import java.util.Optional;
 
 import ru.yandex.practicum.filmorate.model.User;
 
-public interface UserService {
+public interface UserStorage {
+    User create(User user);
 
-    User createUser(User user);
+    User update(User user);
 
-    User updateUser(User user);
+    Optional<User> findUserById(int id);
 
-    Optional<User> getUserById(int id);
-
-    List<User> getAllUsers();
+    List<User> findAll();
 
     void addFriend(int userId, int friendId);
 
