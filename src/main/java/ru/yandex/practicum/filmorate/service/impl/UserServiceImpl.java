@@ -79,6 +79,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void removeUser(int id) {
+        validateUserExists(id);
+        userStorage.removeUser(id);
+    }
+
+    @Override
     public List<User> getCommonFriends(int userId, int otherUserId) {
         validateUserExists(userId);
         validateUserExists(otherUserId);

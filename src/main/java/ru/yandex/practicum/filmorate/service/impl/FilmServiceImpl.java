@@ -135,6 +135,12 @@ public class FilmServiceImpl implements FilmService {
         return films;
     }
 
+    @Override
+    public void removeFilm(int id) {
+        validateFilmExists(id);
+        filmStorage.removeFilm(id);
+    }
+
     private void validateFilm(Film film) {
         if (film.getReleaseDate().isBefore(CINEMA_BIRTHDAY)) {
             throw new ValidationException("Release date cannot be earlier than " + CINEMA_BIRTHDAY);
