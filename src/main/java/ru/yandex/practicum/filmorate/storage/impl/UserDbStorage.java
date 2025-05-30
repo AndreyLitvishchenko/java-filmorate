@@ -1,22 +1,21 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
+
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
-import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
-
-import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.mapper.UserMapper;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 @Repository
 @Slf4j
@@ -29,15 +28,15 @@ public class UserDbStorage implements UserStorage {
     public User create(User user) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)",
-                    new String[] { "user_id" });
-            ps.setString(1, user.getEmail());
-            ps.setString(2, user.getLogin());
-            ps.setString(3, user.getName());
-            ps.setDate(4, Date.valueOf(user.getBirthday()));
-            return ps;
-            },
+                    PreparedStatement ps = connection.prepareStatement(
+                            "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)",
+                            new String[]{"user_id"});
+                    ps.setString(1, user.getEmail());
+                    ps.setString(2, user.getLogin());
+                    ps.setString(3, user.getName());
+                    ps.setDate(4, Date.valueOf(user.getBirthday()));
+                    return ps;
+                },
                 keyHolder);
         user.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
         log.info("User created: {}", user);
@@ -125,7 +124,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public void removeUser(int id) {
         jdbcTemplate.update("DELETE FROM users WHERE user_id = ?", id);
-        log.info("Removed user id = {}" , id);
+        log.info("Removed user id = {}", id);
     }
 
     private void validUserExists(int userId) {
