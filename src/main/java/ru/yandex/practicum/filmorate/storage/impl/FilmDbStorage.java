@@ -108,4 +108,10 @@ public class FilmDbStorage implements FilmStorage {
                         "ORDER BY likes_count DESC " +
                         "LIMIT ?", filmMapper, count);
     }
+
+    @Override
+    public void removeFilm(int id) {
+        jdbcTemplate.update("DELETE FROM films WHERE film_id = ?", id);
+        log.info("Removed film id={}", id);
+    }
 }

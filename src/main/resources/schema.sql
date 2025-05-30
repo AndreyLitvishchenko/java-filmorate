@@ -26,19 +26,19 @@ CREATE TABLE IF NOT EXISTS genres (
 );
 
 CREATE TABLE IF NOT EXISTS film_genres (
-    film_id INTEGER NOT NULL REFERENCES films(film_id),
-    genre_id INTEGER NOT NULL REFERENCES genres(genre_id),
+    film_id INTEGER NOT NULL REFERENCES films(film_id) on delete cascade on update cascade,
+    genre_id INTEGER NOT NULL REFERENCES genres(genre_id) on delete cascade on update cascade,
     PRIMARY KEY (film_id, genre_id)
 );
 
 CREATE TABLE IF NOT EXISTS likes (
-    film_id INTEGER NOT NULL REFERENCES films(film_id),
-    user_id INTEGER NOT NULL REFERENCES users(user_id),
+    film_id INTEGER NOT NULL REFERENCES films(film_id) on delete cascade on update cascade,
+    user_id INTEGER NOT NULL REFERENCES users(user_id) on delete cascade on update cascade,
     PRIMARY KEY (film_id, user_id)
 );
 
 CREATE TABLE IF NOT EXISTS friends (
-    user_id INTEGER NOT NULL REFERENCES users(user_id),
-    friend_id INTEGER NOT NULL REFERENCES users(user_id),
+    user_id INTEGER NOT NULL REFERENCES users(user_id) on delete cascade on update cascade,
+    friend_id INTEGER NOT NULL REFERENCES users(user_id) on delete cascade on update cascade,
     PRIMARY KEY (user_id, friend_id)
 );
