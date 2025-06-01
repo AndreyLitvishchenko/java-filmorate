@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
@@ -68,7 +68,8 @@ public class FilmDbStorage implements FilmStorage {
                 "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, "
                         + "f.mpa_id, m.name as mpa_name FROM films f "
                         + "JOIN mpa m ON f.mpa_id = m.mpa_id "
-                        + "WHERE f.film_id = ?", filmMapper, id);
+                        + "WHERE f.film_id = ?",
+                filmMapper, id);
         return films.isEmpty() ? Optional.empty() : Optional.of(films.get(0));
     }
 
@@ -77,7 +78,8 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(
                 "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, "
                         + "f.mpa_id, m.name as mpa_name FROM films f " +
-                        "JOIN mpa m ON f.mpa_id = m.mpa_id", filmMapper);
+                        "JOIN mpa m ON f.mpa_id = m.mpa_id",
+                filmMapper);
     }
 
     @Override
@@ -106,7 +108,34 @@ public class FilmDbStorage implements FilmStorage {
                         "LEFT JOIN likes l ON f.film_id = l.film_id " +
                         "GROUP BY f.film_id " +
                         "ORDER BY likes_count DESC " +
-                        "LIMIT ?", filmMapper, count);
+                        "LIMIT ?",
+                filmMapper, count);
+    }
+
+    @Override
+    public List<Film> getFilmsByDirectorOrderBy(Long directorId, String sortBy) {
+        String sql;
+        if ("year".equalsIgnoreCase(sortBy)) {
+            sql = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, " +
+                    "m.name as mpa_name " +
+                    "FROM films f " +
+                    "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                    "JOIN directors_films df ON f.film_id = df.film_id " +
+                    "WHERE df.director_id = ? " +
+                    "ORDER BY f.release_date";
+        } else { // sortBy = "likes"
+            sql = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, " +
+                    "m.name as mpa_name, COUNT(l.user_id) as likes_count " +
+                    "FROM films f " +
+                    "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                    "JOIN directors_films df ON f.film_id = df.film_id " +
+                    "LEFT JOIN likes l ON f.film_id = l.film_id " +
+                    "WHERE df.director_id = ? " +
+                    "GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, m.name " +
+                    "ORDER BY likes_count DESC";
+        }
+
+        return jdbcTemplate.query(sql, filmMapper, directorId);
     }
 
     @Override

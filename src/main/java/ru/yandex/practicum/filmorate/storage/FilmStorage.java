@@ -20,6 +20,8 @@ public interface FilmStorage {
 
     List<Film> getMostPopularFilms(int count);
 
+    List<Film> getFilmsByDirectorOrderBy(Long directorId, String sortBy);
+
     void removeFilm(int id);
 
     List<Integer> getLikedFilms(int userId);

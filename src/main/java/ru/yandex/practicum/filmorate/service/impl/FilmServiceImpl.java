@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.GenreService;
 import ru.yandex.practicum.filmorate.service.MpaService;
@@ -28,6 +29,7 @@ public class FilmServiceImpl implements FilmService {
     private final GenreService genreService;
     private final MpaService mpaService;
     private final UserService userService;
+    private final DirectorService directorService;
 
     @Override
     public Film createFilm(Film film) {
@@ -43,6 +45,11 @@ public class FilmServiceImpl implements FilmService {
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {
             genreService.addGenresToFilm(createdFilm.getId(), film.getGenres());
             createdFilm.setGenres(genreService.getFilmGenres(createdFilm.getId()));
+        }
+
+        if (film.getDirectors() != null && !film.getDirectors().isEmpty()) {
+            directorService.addDirectorsToFilm(createdFilm.getId(), film.getDirectors());
+            createdFilm.setDirectors(directorService.getFilmDirectors(createdFilm.getId()));
         }
 
         log.info("Film created: {}", createdFilm);
@@ -64,6 +71,9 @@ public class FilmServiceImpl implements FilmService {
         genreService.updateFilmGenres(film.getId(), film.getGenres());
         updatedFilm.setGenres(genreService.getFilmGenres(film.getId()));
 
+        directorService.updateFilmDirectors(film.getId(), film.getDirectors());
+        updatedFilm.setDirectors(directorService.getFilmDirectors(film.getId()));
+
         log.info("Film updated: {}", updatedFilm);
         return updatedFilm;
     }
@@ -75,6 +85,7 @@ public class FilmServiceImpl implements FilmService {
         if (filmOpt.isPresent()) {
             Film film = filmOpt.get();
             film.setGenres(genreService.getFilmGenres(id));
+            film.setDirectors(directorService.getFilmDirectors(id));
             return Optional.of(film);
         }
 
@@ -92,7 +103,10 @@ public class FilmServiceImpl implements FilmService {
 
             Map<Integer, List<Genre>> filmGenres = genreService.getGenresForFilms(filmIds);
 
-            films.forEach(film -> film.setGenres(filmGenres.getOrDefault(film.getId(), new ArrayList<>())));
+            films.forEach(film -> {
+                film.setGenres(filmGenres.getOrDefault(film.getId(), new ArrayList<>()));
+                film.setDirectors(directorService.getFilmDirectors(film.getId()));
+            });
         }
 
         return films;
@@ -127,7 +141,30 @@ public class FilmServiceImpl implements FilmService {
 
             Map<Integer, List<Genre>> filmGenres = genreService.getGenresForFilms(filmIds);
 
-            films.forEach(film -> film.setGenres(filmGenres.getOrDefault(film.getId(), new ArrayList<>())));
+            films.forEach(film -> {
+                film.setGenres(filmGenres.getOrDefault(film.getId(), new ArrayList<>()));
+                film.setDirectors(directorService.getFilmDirectors(film.getId()));
+            });
+        }
+
+        return films;
+    }
+
+    @Override
+    public List<Film> getFilmsByDirectorOrderBy(Long directorId, String sortBy) {
+        List<Film> films = filmStorage.getFilmsByDirectorOrderBy(directorId, sortBy);
+
+        if (!films.isEmpty()) {
+            List<Integer> filmIds = films.stream()
+                    .map(Film::getId)
+                    .toList();
+
+            Map<Integer, List<Genre>> filmGenres = genreService.getGenresForFilms(filmIds);
+
+            films.forEach(film -> {
+                film.setGenres(filmGenres.getOrDefault(film.getId(), new ArrayList<>()));
+                film.setDirectors(directorService.getFilmDirectors(film.getId()));
+            });
         }
 
         return films;
