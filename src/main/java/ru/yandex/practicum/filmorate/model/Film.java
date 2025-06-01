@@ -24,4 +24,5 @@ public class Film {
     @NotNull
     private Mpa mpa;
     private List<Genre> genres = new ArrayList<>();
+    private List<Director> directors = new ArrayList<>();
 }

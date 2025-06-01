@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -41,6 +43,9 @@ class FilmServiceImplTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private DirectorService directorService;
+
     @InjectMocks
     private FilmServiceImpl filmService;
 
@@ -70,7 +75,6 @@ class FilmServiceImplTest {
         film.setGenres(genres);
     }
 
-
     @Test
     void shouldThrowValidationExceptionWhenReleaseDateBeforeCinemaBirthday() {
         film.setReleaseDate(LocalDate.of(1895, 12, 27));
@@ -94,6 +98,7 @@ class FilmServiceImplTest {
 
         when(filmStorage.findAll()).thenReturn(films);
         when(genreService.getGenresForFilms(filmIds)).thenReturn(filmGenres);
+        when(directorService.getFilmDirectors(anyInt())).thenReturn(new ArrayList<>());
 
         List<Film> result = filmService.getAllFilms();
 
@@ -111,6 +116,7 @@ class FilmServiceImplTest {
 
         when(filmStorage.getMostPopularFilms(anyInt())).thenReturn(films);
         when(genreService.getGenresForFilms(filmIds)).thenReturn(filmGenres);
+        when(directorService.getFilmDirectors(anyInt())).thenReturn(new ArrayList<>());
 
         List<Film> result = filmService.getPopularFilms(10);
 

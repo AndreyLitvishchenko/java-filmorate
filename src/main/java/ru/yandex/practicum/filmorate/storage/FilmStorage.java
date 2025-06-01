@@ -19,4 +19,6 @@ public interface FilmStorage {
     void removeLike(int filmId, int userId);
 
     List<Film> getMostPopularFilms(int count);
+
+    List<Film> getFilmsByDirectorOrderBy(Long directorId, String sortBy);
 }
