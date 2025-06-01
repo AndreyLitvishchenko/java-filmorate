@@ -137,4 +137,16 @@ public class FilmDbStorage implements FilmStorage {
 
         return jdbcTemplate.query(sql, filmMapper, directorId);
     }
+
+    @Override
+    public void removeFilm(int id) {
+        jdbcTemplate.update("DELETE FROM films WHERE film_id = ?", id);
+        log.info("Removed film id={}", id);
+    }
+
+    @Override
+    public List<Integer> getLikedFilms(int userId) {
+        String sql = "SELECT film_id FROM likes WHERE user_id = ?";
+        return jdbcTemplate.queryForList(sql, Integer.class, userId);
+    }
 }
