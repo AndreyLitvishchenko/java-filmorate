@@ -127,6 +127,14 @@ public class UserDbStorage implements UserStorage {
         log.info("Removed user id = {}", id);
     }
 
+    @Override
+    public List<Integer> getLikedFilms(int userId) {
+        String sql = "SELECT film_id FROM likes WHERE user_id = ?";
+        List<Integer> likedFilms = jdbcTemplate.queryForList(sql, Integer.class, userId);
+        log.debug("User {} liked films: {}", userId, likedFilms);
+        return likedFilms;
+    }
+
     private void validUserExists(int userId) {
         if (!jdbcTemplate.queryForObject(
                 "SELECT EXISTS(SELECT 1 FROM users WHERE user_id = ?)",

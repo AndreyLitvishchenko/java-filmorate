@@ -25,4 +25,6 @@ public interface FilmService {
     List<Film> getPopularFilms(int count);
 
     void removeFilm(int id);
+
+    List<Film> getCommonFilms(int userId, int friendId);
 }

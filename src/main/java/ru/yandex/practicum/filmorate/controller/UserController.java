@@ -15,7 +15,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.RecommendationService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 @RestController
@@ -24,6 +26,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final RecommendationService recommendationService;
 
     @GetMapping
     public List<User> getAllUsers() {
@@ -69,5 +72,10 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public void removeUser(@PathVariable int userId) {
         userService.removeUser(userId);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public List<Film> getRecommendations(@PathVariable int id) {
+        return recommendationService.getRecommendations(id);
     }
 }

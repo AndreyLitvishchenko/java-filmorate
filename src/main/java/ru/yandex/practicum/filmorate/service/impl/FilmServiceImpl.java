@@ -1,10 +1,8 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -139,6 +137,39 @@ public class FilmServiceImpl implements FilmService {
     public void removeFilm(int id) {
         validateFilmExists(id);
         filmStorage.removeFilm(id);
+    }
+
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        // Проверяем существование пользователей
+        validateUserExists(userId);
+        validateUserExists(friendId);
+
+        // Получаем списки лайков пользователей
+        List<Integer> userLikes = filmStorage.getLikedFilms(userId);
+        List<Integer> friendLikes = filmStorage.getLikedFilms(friendId);
+
+        // Находим пересечение (общие фильмы)
+        Set<Integer> commonFilmIds = new HashSet<>(userLikes);
+        commonFilmIds.retainAll(friendLikes);
+
+        // Получаем фильмы и сортируем по популярности
+        List<Film> commonFilms = commonFilmIds.stream()
+                .map(filmId -> filmStorage.findFilmById(filmId)
+                        .orElseThrow(() -> new NotFoundException("Film with ID " + filmId + " not found")))
+                .sorted((f1, f2) -> Integer.compare(f2.getLikesCount(), f1.getLikesCount()))
+                .collect(Collectors.toList());
+
+        // Загружаем жанры для каждого фильма
+        if (!commonFilms.isEmpty()) {
+            Map<Integer, List<Genre>> filmGenres = genreService.getGenresForFilms(
+                    commonFilms.stream().map(Film::getId).collect(Collectors.toList())
+            );
+            commonFilms.forEach(film -> film.setGenres(filmGenres.getOrDefault(film.getId(), new ArrayList<>())));
+        }
+
+        log.info("Found {} common films between user {} and user {}", commonFilms.size(), userId, friendId);
+        return commonFilms;
     }
 
     private void validateFilm(Film film) {
