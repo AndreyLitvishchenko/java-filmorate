@@ -65,18 +65,6 @@ public class FilmController {
     @GetMapping("/director/{directorId}")
     public List<Film> getFilmsByDirector(@PathVariable Long directorId,
             @RequestParam(value = "sortBy", defaultValue = "likes") String sortBy) {
-        log.info("Received request to get films by director {} sorted by {}", directorId, sortBy);
         return filmService.getFilmsByDirectorOrderBy(directorId, sortBy);
-
-  @DeleteMapping("/{filmId}")
-    public void removeFilm(@PathVariable int filmId) {
-        filmService.removeFilm(filmId);
-    }
-
-    @GetMapping("/common")
-    public List<Film> getCommonFilms(
-            @RequestParam int userId,
-            @RequestParam int friendId) {
-        return filmService.getCommonFilms(userId, friendId);
     }
 }
