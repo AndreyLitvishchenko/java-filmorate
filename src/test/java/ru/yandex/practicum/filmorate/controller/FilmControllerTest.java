@@ -149,9 +149,9 @@ class FilmControllerTest {
     @Test
     void shouldGetPopularFilms() {
         List<Film> popularFilms = List.of(popularFilm, film);
-        when(filmService.getPopularFilms(10)).thenReturn(popularFilms);
+        when(filmService.getPopularFilms(10, null, null)).thenReturn(popularFilms);
 
-        List<Film> result = filmController.getPopularFilms(10);
+        List<Film> result = filmController.getPopularFilms(10, null, null);
 
         assertEquals(2, result.size());
         assertEquals("Popular Film", result.get(0).getName());

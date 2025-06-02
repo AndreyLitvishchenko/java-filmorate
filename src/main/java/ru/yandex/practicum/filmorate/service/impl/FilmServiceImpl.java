@@ -130,8 +130,19 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public List<Film> getPopularFilms(int count) {
-        List<Film> films = filmStorage.getMostPopularFilms(count);
+    public List<Film> getPopularFilms(Integer count, Integer genreId, Integer year) {
+        List<Film> films;
+
+        if (genreId == null && year == null) {
+            films = filmStorage.getMostPopularFilms(count);
+        } else if (year == null) {
+            films = filmStorage.getMostPopularFilmsByGenre(count, genreId);
+        } else if (genreId == null) {
+            films = filmStorage.getMostPopularFilmsByYear(count, year);
+        } else {
+            films = filmStorage.getMostPopularFilmsByGenreAndYear(count, genreId, year);
+        }
+
 
         if (!films.isEmpty()) {
             List<Integer> filmIds = films.stream()
