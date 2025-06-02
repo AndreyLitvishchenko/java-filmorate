@@ -20,6 +20,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.impl.UserServiceImpl;
+import ru.yandex.practicum.filmorate.storage.EventStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,6 +28,9 @@ class UserServiceImplTest {
 
     @Mock
     private UserStorage userStorage;
+
+    @Mock
+    private EventStorage eventStorage;
 
     @InjectMocks
     private UserServiceImpl userService;

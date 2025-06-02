@@ -115,6 +115,7 @@ public class FilmServiceImpl implements FilmService {
         validateUserExists(userId);
 
         filmStorage.addLike(filmId, userId);
+        userService.addEvent(userId, filmId, "LIKE", "ADD");
         log.info("User {} liked film {}", userId, filmId);
     }
 
@@ -124,6 +125,7 @@ public class FilmServiceImpl implements FilmService {
         validateUserExists(userId);
 
         filmStorage.removeLike(filmId, userId);
+        userService.addEvent(userId, filmId, "LIKE", "REMOVE");
         log.info("User {} removed like from film {}", userId, filmId);
     }
 
