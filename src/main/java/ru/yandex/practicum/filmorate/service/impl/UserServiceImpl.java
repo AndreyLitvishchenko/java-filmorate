@@ -104,6 +104,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<Event> getEvents(int id) {
+        validateUserExists(id);
         return eventStorage.get(id);
     }
 

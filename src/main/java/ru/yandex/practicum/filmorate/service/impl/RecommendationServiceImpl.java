@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.RecommendationService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 public class RecommendationServiceImpl implements RecommendationService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
+    private final FilmService filmService;
 
     @Override
     public List<Film> getRecommendations(int userId) {
@@ -91,7 +93,7 @@ public class RecommendationServiceImpl implements RecommendationService {
 
     private List<Film> mapFilmIdsToFilms(Set<Integer> filmIds) {
         return filmIds.stream()
-                .map(filmId -> filmStorage.findFilmById(filmId)
+                .map(filmId -> filmService.getFilmById(filmId)
                         .orElseThrow(() -> new NotFoundException("Film with ID " + filmId + " not found")))
                 .collect(Collectors.toList());
     }

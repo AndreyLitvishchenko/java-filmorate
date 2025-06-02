@@ -82,11 +82,13 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public void addDirectorsToFilm(int filmId, List<Director> directors) {
+
+
+        jdbcTemplate.update("DELETE FROM directors_films WHERE film_id = ?", filmId);
+
         if (directors == null || directors.isEmpty()) {
             return;
         }
-
-        jdbcTemplate.update("DELETE FROM directors_films WHERE film_id = ?", filmId);
 
         for (Director director : directors) {
             jdbcTemplate.update("INSERT INTO directors_films (director_id, film_id) VALUES (?, ?)",

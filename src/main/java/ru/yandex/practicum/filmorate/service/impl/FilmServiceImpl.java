@@ -19,6 +19,7 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.GenreService;
 import ru.yandex.practicum.filmorate.service.MpaService;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 @Service
@@ -32,6 +33,7 @@ public class FilmServiceImpl implements FilmService {
     private final MpaService mpaService;
     private final UserService userService;
     private final DirectorService directorService;
+    private final DirectorStorage directorStorage;
 
     @Override
     public Film createFilm(Film film) {
@@ -77,7 +79,7 @@ public class FilmServiceImpl implements FilmService {
         updatedFilm.setDirectors(directorService.getFilmDirectors(film.getId()));
 
         log.info("Film updated: {}", updatedFilm);
-        return updatedFilm;
+        return getFilmById(film.getId()).get();
     }
 
     @Override
@@ -166,6 +168,7 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getFilmsByDirectorOrderBy(Long directorId, String sortBy) {
+        directorStorage.getDirector(directorId).orElseThrow(() -> new NotFoundException("Режисер id=" + directorId +" не найден"));
         List<Film> films = filmStorage.getFilmsByDirectorOrderBy(directorId, sortBy);
 
         if (!films.isEmpty()) {

@@ -52,7 +52,7 @@ public class ReviewDbStorage implements ReviewStorage {
             throw new NotFoundException("Review with ID " + review.getReviewId() + " not found");
         }
         log.info("Review updated: {}", review);
-        return review;
+        return findReviewById(review.getReviewId()).get();
     }
 
     @Override
