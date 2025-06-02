@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
+import ru.yandex.practicum.filmorate.model.Film;
+
 import java.util.List;
 import java.util.Optional;
-
-import ru.yandex.practicum.filmorate.model.Film;
 
 /**
  * Интерфейс сервиса для работы с фильмами
@@ -22,7 +22,7 @@ public interface FilmService {
 
     void removeLike(int filmId, int userId);
 
-    List<Film> getPopularFilms(int count);
+    List<Film> getPopularFilms(Integer count, Integer genreId, Integer year);
 
     List<Film> getFilmsByDirectorOrderBy(Long directorId, String sortBy);
 

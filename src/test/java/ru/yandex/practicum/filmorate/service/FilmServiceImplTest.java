@@ -118,7 +118,7 @@ class FilmServiceImplTest {
         when(genreService.getGenresForFilms(filmIds)).thenReturn(filmGenres);
         when(directorService.getFilmDirectors(anyInt())).thenReturn(new ArrayList<>());
 
-        List<Film> result = filmService.getPopularFilms(10);
+        List<Film> result = filmService.getPopularFilms(10, null, null);
 
         assertEquals(1, result.size());
         assertEquals(genres, result.get(0).getGenres());

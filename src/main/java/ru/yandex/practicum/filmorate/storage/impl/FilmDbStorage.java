@@ -161,4 +161,53 @@ public class FilmDbStorage implements FilmStorage {
                 "ORDER BY COUNT(t1.user_id) DESC";
         return jdbcTemplate.query(sql, filmMapper, userId, friendId);
     }
+
+    @Override
+    public List<Film> getMostPopularFilmsByGenre(int count, int genreId) {
+        return jdbcTemplate.query(
+                "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, " +
+                        "m.name as mpa_name, COUNT(l.user_id) as likes_count " +
+                        "FROM films f " +
+                        "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                        "LEFT JOIN likes l ON f.film_id = l.film_id " +
+                        "LEFT JOIN film_genres fg ON f.film_id = fg.film_id " +
+                        "WHERE fg.genre_id = ? " +
+                        "GROUP BY f.film_id " +
+                        "ORDER BY likes_count DESC " +
+                        "LIMIT ?",
+                filmMapper, genreId, count);
+    }
+
+    @Override
+    public List<Film> getMostPopularFilmsByYear(int count, int year) {
+        return jdbcTemplate.query(
+                "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, " +
+                        "m.name as mpa_name, COUNT(l.user_id) as likes_count " +
+                        "FROM films f " +
+                        "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                        "LEFT JOIN likes l ON f.film_id = l.film_id " +
+                        "WHERE EXTRACT(YEAR FROM CAST(f.release_date AS date)) = ? " +
+                        "GROUP BY f.film_id " +
+                        "ORDER BY likes_count DESC " +
+                        "LIMIT ?",
+                filmMapper, year, count);
+    }
+
+    @Override
+    public List<Film> getMostPopularFilmsByGenreAndYear(int count, int genreId, int year) {
+        return jdbcTemplate.query(
+                "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, " +
+                        "m.name as mpa_name, COUNT(l.user_id) as likes_count " +
+                        "FROM films f " +
+                        "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                        "LEFT JOIN likes l ON f.film_id = l.film_id " +
+                        "LEFT JOIN film_genres fg ON f.film_id = fg.film_id " +
+                        "WHERE fg.genre_id = ? " +
+                        "AND " +
+                        "EXTRACT(YEAR FROM CAST(f.release_date AS date)) = ? " +
+                        "GROUP BY f.film_id " +
+                        "ORDER BY likes_count DESC " +
+                        "LIMIT ?",
+                filmMapper, genreId, year, count);
+    }
 }
