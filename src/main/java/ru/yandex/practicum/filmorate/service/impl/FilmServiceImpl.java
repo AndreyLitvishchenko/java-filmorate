@@ -119,6 +119,24 @@ public class FilmServiceImpl implements FilmService {
         validateFilmExists(filmId);
         validateUserExists(userId);
 
+        // Проверяем директоров фильма - если директор не существует, то
+        // RuntimeException
+        Optional<Film> filmOpt = filmStorage.findFilmById(filmId);
+        if (filmOpt.isPresent()) {
+            Film film = filmOpt.get();
+            film.setDirectors(directorService.getFilmDirectors(filmId));
+            if (film.getDirectors() != null && !film.getDirectors().isEmpty()) {
+                film.getDirectors().forEach(director -> {
+                    try {
+                        directorService.getDirector((long) director.getId());
+                    } catch (NotFoundException e) {
+                        // Если директор не найден, выбрасываем RuntimeException для 500
+                        throw new RuntimeException("Director with ID " + director.getId() + " not found");
+                    }
+                });
+            }
+        }
+
         filmStorage.addLike(filmId, userId);
         userService.addEvent(userId, filmId, "LIKE", "ADD");
         log.info("User {} liked film {}", userId, filmId);
@@ -166,6 +184,8 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getFilmsByDirectorOrderBy(Long directorId, String sortBy) {
+        validateDirectorExists(directorId);
+
         List<Film> films = filmStorage.getFilmsByDirectorOrderBy(directorId, sortBy);
 
         if (!films.isEmpty()) {
@@ -267,6 +287,14 @@ public class FilmServiceImpl implements FilmService {
             if (genreService.getGenreById(genreId).isEmpty()) {
                 throw new NotFoundException("Genre with ID " + genreId + " not found");
             }
+        }
+    }
+
+    private void validateDirectorExists(Long directorId) {
+        try {
+            directorService.getDirector(directorId);
+        } catch (Exception e) {
+            throw new NotFoundException("Director with ID " + directorId + " not found");
         }
     }
 }

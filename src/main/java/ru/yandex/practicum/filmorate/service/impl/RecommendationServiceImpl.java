@@ -1,16 +1,24 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.RecommendationService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -18,6 +26,7 @@ import java.util.stream.Collectors;
 public class RecommendationServiceImpl implements RecommendationService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
+    private final FilmService filmService;
 
     @Override
     public List<Film> getRecommendations(int userId) {
@@ -41,8 +50,8 @@ public class RecommendationServiceImpl implements RecommendationService {
         validateUserExists(userId);
         validateUserExists(friendId);
 
-        List<Integer> userLikes = userStorage.getLikedFilms(userId);
-        List<Integer> friendLikes = userStorage.getLikedFilms(friendId);
+        List<Integer> userLikes = filmStorage.getLikedFilms(userId);
+        List<Integer> friendLikes = filmStorage.getLikedFilms(friendId);
 
         Set<Integer> commonFilmIds = findCommonFilmIds(userLikes, friendLikes);
 
@@ -53,9 +62,8 @@ public class RecommendationServiceImpl implements RecommendationService {
 
     private Map<Integer, Set<Integer>> getAllUserLikes() {
         Map<Integer, Set<Integer>> userLikes = new HashMap<>();
-        userStorage.findAll().forEach(user ->
-                userLikes.put(user.getId(), new HashSet<>(filmStorage.getLikedFilms(user.getId())))
-        );
+        userStorage.findAll()
+                .forEach(user -> userLikes.put(user.getId(), new HashSet<>(filmStorage.getLikedFilms(user.getId()))));
         return userLikes;
     }
 
@@ -63,8 +71,7 @@ public class RecommendationServiceImpl implements RecommendationService {
         Set<Integer> currentUserLikes = userLikes.get(userId);
         return userLikes.entrySet().stream()
                 .filter(entry -> entry.getKey() != userId)
-                .max(Comparator.comparingInt(entry ->
-                        getIntersectionSize(currentUserLikes, entry.getValue())))
+                .max(Comparator.comparingInt(entry -> getIntersectionSize(currentUserLikes, entry.getValue())))
                 .map(Map.Entry::getKey)
                 .orElse(-1);
     }
@@ -91,7 +98,7 @@ public class RecommendationServiceImpl implements RecommendationService {
 
     private List<Film> mapFilmIdsToFilms(Set<Integer> filmIds) {
         return filmIds.stream()
-                .map(filmId -> filmStorage.findFilmById(filmId)
+                .map(filmId -> filmService.getFilmById(filmId)
                         .orElseThrow(() -> new NotFoundException("Film with ID " + filmId + " not found")))
                 .collect(Collectors.toList());
     }

@@ -1,8 +1,11 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Review;
@@ -11,8 +14,6 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
-
-import java.util.List;
 
 @Service
 @Slf4j
@@ -29,7 +30,7 @@ public class ReviewServiceImpl implements ReviewService {
         validateUserAndFilm(review.getUserId(), review.getFilmId());
 
         Review createdReview = reviewStorage.create(review);
-        userService.addEvent(review.getUserId(), review.getReviewId(), "REVIEW", "ADD");
+        userService.addEvent(review.getUserId(), createdReview.getReviewId(), "REVIEW", "ADD");
         log.info("Created review: {}", createdReview);
         return createdReview;
     }
@@ -49,6 +50,8 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public void delete(int id) {
         Review review = findReviewById(id);
+
+        // Удаляем отзыв
         reviewStorage.delete(id);
         userService.addEvent(review.getUserId(), review.getReviewId(), "REVIEW", "REMOVE");
         log.info("Deleted review with ID: {}", id);

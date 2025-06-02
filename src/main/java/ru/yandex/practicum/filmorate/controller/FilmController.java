@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,13 +50,19 @@ public class FilmController {
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void addLike(@PathVariable int id, @PathVariable int userId) {
-        filmService.addLike(id, userId);
+    public ResponseEntity<Void> addLike(@PathVariable int id, @PathVariable int userId) {
+        try {
+            filmService.addLike(id, userId);
+            return ResponseEntity.ok().build(); // 200
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500
+        }
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void removeLike(@PathVariable int id, @PathVariable int userId) {
+    public ResponseEntity<Void> removeLike(@PathVariable int id, @PathVariable int userId) {
         filmService.removeLike(id, userId);
+        return ResponseEntity.ok().build(); // 200
     }
 
     @GetMapping("/popular")
