@@ -82,19 +82,17 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public void addDirectorsToFilm(int filmId, List<Director> directors) {
+
+
         jdbcTemplate.update("DELETE FROM directors_films WHERE film_id = ?", filmId);
 
-        if (directors != null && !directors.isEmpty()) {
-            for (Director director : directors) {
-                String checkSql = "SELECT COUNT(*) FROM directors WHERE director_id = ?";
-                Integer count = jdbcTemplate.queryForObject(checkSql, Integer.class, director.getId());
-                if (count == null || count == 0) {
-                    throw new RuntimeException("Director with id " + director.getId() + " not found");
-                }
+        if (directors == null || directors.isEmpty()) {
+            return;
+        }
 
-                jdbcTemplate.update("INSERT INTO directors_films (director_id, film_id) VALUES (?, ?)",
-                        director.getId(), filmId);
-            }
+        for (Director director : directors) {
+            jdbcTemplate.update("INSERT INTO directors_films (director_id, film_id) VALUES (?, ?)",
+                    director.getId(), filmId);
         }
 
         log.info("Directors updated for film with id: {}", filmId);

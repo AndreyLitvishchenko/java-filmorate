@@ -14,12 +14,10 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.service.DirectorService;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.GenreService;
-import ru.yandex.practicum.filmorate.service.MpaService;
-import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.*;
+import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +30,7 @@ public class FilmServiceImpl implements FilmService {
     private final MpaService mpaService;
     private final UserService userService;
     private final DirectorService directorService;
+    private final DirectorStorage directorStorage;
 
     @Override
     public Film createFilm(Film film) {
@@ -77,7 +76,7 @@ public class FilmServiceImpl implements FilmService {
         updatedFilm.setDirectors(directorService.getFilmDirectors(film.getId()));
 
         log.info("Film updated: {}", updatedFilm);
-        return updatedFilm;
+        return getFilmById(film.getId()).get();
     }
 
     @Override
@@ -118,27 +117,8 @@ public class FilmServiceImpl implements FilmService {
     public void addLike(int filmId, int userId) {
         validateFilmExists(filmId);
         validateUserExists(userId);
-
-        // Проверяем директоров фильма - если директор не существует, то
-        // RuntimeException
-        Optional<Film> filmOpt = filmStorage.findFilmById(filmId);
-        if (filmOpt.isPresent()) {
-            Film film = filmOpt.get();
-            film.setDirectors(directorService.getFilmDirectors(filmId));
-            if (film.getDirectors() != null && !film.getDirectors().isEmpty()) {
-                film.getDirectors().forEach(director -> {
-                    try {
-                        directorService.getDirector((long) director.getId());
-                    } catch (NotFoundException e) {
-                        // Если директор не найден, выбрасываем RuntimeException для 500
-                        throw new RuntimeException("Director with ID " + director.getId() + " not found");
-                    }
-                });
-            }
-        }
-
-        filmStorage.addLike(filmId, userId);
         userService.addEvent(userId, filmId, "LIKE", "ADD");
+        filmStorage.addLike(filmId, userId);
         log.info("User {} liked film {}", userId, filmId);
     }
 
