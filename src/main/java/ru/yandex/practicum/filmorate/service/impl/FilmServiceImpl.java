@@ -1,20 +1,25 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.service.*;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.service.DirectorService;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.GenreService;
+import ru.yandex.practicum.filmorate.service.MpaService;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 @Service
 @RequiredArgsConstructor
@@ -143,7 +148,6 @@ public class FilmServiceImpl implements FilmService {
             films = filmStorage.getMostPopularFilmsByGenreAndYear(count, genreId, year);
         }
 
-
         if (!films.isEmpty()) {
             List<Integer> filmIds = films.stream()
                     .map(Film::getId)
@@ -205,6 +209,25 @@ public class FilmServiceImpl implements FilmService {
         return films;
     }
 
+    @Override
+    public List<Film> searchFilms(String query, String by) {
+        List<Film> films = filmStorage.searchFilms(query, by);
+
+        if (!films.isEmpty()) {
+            List<Integer> filmIds = films.stream()
+                    .map(Film::getId)
+                    .toList();
+
+            Map<Integer, List<Genre>> filmGenres = genreService.getGenresForFilms(filmIds);
+
+            films.forEach(film -> {
+                film.setGenres(filmGenres.getOrDefault(film.getId(), new ArrayList<>()));
+                film.setDirectors(directorService.getFilmDirectors(film.getId()));
+            });
+        }
+
+        return films;
+    }
 
     private void validateFilm(Film film) {
         if (film.getReleaseDate().isBefore(CINEMA_BIRTHDAY)) {

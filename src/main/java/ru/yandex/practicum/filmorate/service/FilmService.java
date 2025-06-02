@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
-import ru.yandex.practicum.filmorate.model.Film;
-
 import java.util.List;
 import java.util.Optional;
+
+import ru.yandex.practicum.filmorate.model.Film;
 
 /**
  * Интерфейс сервиса для работы с фильмами
@@ -29,4 +29,6 @@ public interface FilmService {
     void removeFilm(int id);
 
     List<Film> getCommonFilms(int userId, int friendId);
+
+    List<Film> searchFilms(String query, String by);
 }

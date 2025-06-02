@@ -44,7 +44,6 @@ public class FilmDirectorTest {
 
         @BeforeEach
         void setUp() throws Exception {
-                // Создаем пользователя для лайков
                 user = new User();
                 user.setEmail("user@test.com");
                 user.setLogin("testuser");
@@ -57,7 +56,6 @@ public class FilmDirectorTest {
                                 .andReturn().getResponse().getContentAsString();
                 user = objectMapper.readValue(userResponse, User.class);
 
-                // Создаем режиссеров
                 director1 = Director.builder().name("Steven Spielberg").build();
                 String dirResponse1 = mockMvc.perform(post("/directors")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -72,7 +70,6 @@ public class FilmDirectorTest {
                                 .andReturn().getResponse().getContentAsString();
                 director2 = objectMapper.readValue(dirResponse2, Director.class);
 
-                // Создаем фильмы
                 film1 = new Film();
                 film1.setName("Jurassic Park");
                 film1.setDescription("Dinosaurs come to life");
@@ -92,7 +89,6 @@ public class FilmDirectorTest {
 
         @Test
         void shouldGetFilmsByDirectorSortedByLikes() throws Exception {
-                // Создаем фильмы
                 String filmResponse1 = mockMvc.perform(post("/films")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(film1)))
@@ -113,10 +109,8 @@ public class FilmDirectorTest {
                                 .andReturn().getResponse().getContentAsString();
                 Film createdFilm3 = objectMapper.readValue(filmResponse3, Film.class);
 
-                // Добавляем лайки
                 mockMvc.perform(put("/films/" + createdFilm1.getId() + "/like/" + user.getId()));
 
-                // Получаем фильмы режиссера отсортированные по лайкам
                 mockMvc.perform(get("/films/director/" + director1.getId() + "?sortBy=likes"))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$[0].name").value("Jurassic Park"))
@@ -125,7 +119,6 @@ public class FilmDirectorTest {
 
         @Test
         void shouldGetFilmsByDirectorSortedByYear() throws Exception {
-                // Создаем фильмы
                 mockMvc.perform(post("/films")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(film1)));
@@ -142,7 +135,6 @@ public class FilmDirectorTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(film3)));
 
-                // Получаем фильмы режиссера отсортированные по году
                 mockMvc.perform(get("/films/director/" + director1.getId() + "?sortBy=year"))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$[0].name").value("E.T."))

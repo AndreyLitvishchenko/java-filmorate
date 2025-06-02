@@ -1,21 +1,22 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.mapper.FilmMapper;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 @Repository
 @Slf4j
@@ -31,7 +32,7 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     "INSERT INTO films (name, description, release_date, duration, mpa_id) VALUES (?, ?, ?, ?, ?)",
-                    new String[]{"film_id"});
+                    new String[] { "film_id" });
             ps.setString(1, film.getName());
             ps.setString(2, film.getDescription());
             ps.setDate(3, Date.valueOf(film.getReleaseDate()));
@@ -151,7 +152,8 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getCommonFilms(int userId, int friendId) {
-        String sql = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, m.name as mpa_name " +
+        String sql = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, m.name as mpa_name "
+                +
                 "FROM likes t1 " +
                 "INNER JOIN likes t2 ON t1.film_id = t2.film_id " +
                 "INNER JOIN films f ON t1.film_id = f.film_id " +
@@ -209,5 +211,56 @@ public class FilmDbStorage implements FilmStorage {
                         "ORDER BY likes_count DESC " +
                         "LIMIT ?",
                 filmMapper, genreId, year, count);
+    }
+
+    @Override
+    public List<Film> searchFilms(String query, String by) {
+        String searchParam = "%" + query.toLowerCase() + "%";
+        String sql;
+
+        if ("director,title".equals(by) || "title,director".equals(by)) {
+            // Поиск по названию и режиссёру
+            sql = "SELECT DISTINCT f.film_id, f.name, f.description, f.release_date, f.duration, " +
+                    "f.mpa_id, m.name as mpa_name, COUNT(DISTINCT l.user_id) as likes_count " +
+                    "FROM films f " +
+                    "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                    "LEFT JOIN likes l ON f.film_id = l.film_id " +
+                    "WHERE f.film_id IN (" +
+                    "   SELECT DISTINCT f2.film_id FROM films f2 WHERE LOWER(f2.name) LIKE ? " +
+                    "   UNION " +
+                    "   SELECT DISTINCT df.film_id FROM directors_films df " +
+                    "   JOIN directors d ON df.director_id = d.director_id " +
+                    "   WHERE LOWER(d.director_name) LIKE ?" +
+                    ") " +
+                    "GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, m.name " +
+                    "ORDER BY likes_count DESC";
+            return jdbcTemplate.query(sql, filmMapper, searchParam, searchParam);
+        } else if ("director".equals(by)) {
+            // Поиск только по режиссёру
+            sql = "SELECT DISTINCT f.film_id, f.name, f.description, f.release_date, f.duration, " +
+                    "f.mpa_id, m.name as mpa_name, COUNT(DISTINCT l.user_id) as likes_count " +
+                    "FROM films f " +
+                    "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                    "LEFT JOIN likes l ON f.film_id = l.film_id " +
+                    "WHERE f.film_id IN (" +
+                    "   SELECT df.film_id FROM directors_films df " +
+                    "   JOIN directors d ON df.director_id = d.director_id " +
+                    "   WHERE LOWER(d.director_name) LIKE ?" +
+                    ") " +
+                    "GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, m.name " +
+                    "ORDER BY likes_count DESC";
+            return jdbcTemplate.query(sql, filmMapper, searchParam);
+        } else {
+            // Поиск только по названию (по умолчанию)
+            sql = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, " +
+                    "f.mpa_id, m.name as mpa_name, COUNT(l.user_id) as likes_count " +
+                    "FROM films f " +
+                    "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                    "LEFT JOIN likes l ON f.film_id = l.film_id " +
+                    "WHERE LOWER(f.name) LIKE ? " +
+                    "GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, m.name " +
+                    "ORDER BY likes_count DESC";
+            return jdbcTemplate.query(sql, filmMapper, searchParam);
+        }
     }
 }
