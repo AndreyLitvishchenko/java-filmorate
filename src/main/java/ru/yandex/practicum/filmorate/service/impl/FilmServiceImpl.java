@@ -1,23 +1,20 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.service.DirectorService;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.GenreService;
-import ru.yandex.practicum.filmorate.service.MpaService;
-import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.*;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -178,36 +175,23 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getCommonFilms(int userId, int friendId) {
-        // Проверяем существование пользователей
-        validateUserExists(userId);
-        validateUserExists(friendId);
+        List<Film> films = filmStorage.getCommonFilms(userId, friendId);
+        if (!films.isEmpty()) {
+            List<Integer> filmIds = films.stream()
+                    .map(Film::getId)
+                    .toList();
 
-        // Получаем списки лайков пользователей
-        List<Integer> userLikes = filmStorage.getLikedFilms(userId);
-        List<Integer> friendLikes = filmStorage.getLikedFilms(friendId);
+            Map<Integer, List<Genre>> filmGenres = genreService.getGenresForFilms(filmIds);
 
-        // Находим пересечение (общие фильмы)
-        Set<Integer> commonFilmIds = new HashSet<>(userLikes);
-        commonFilmIds.retainAll(friendLikes);
-
-        // Получаем фильмы и сортируем по популярности
-        List<Film> commonFilms = commonFilmIds.stream()
-                .map(filmId -> filmStorage.findFilmById(filmId)
-                        .orElseThrow(() -> new NotFoundException("Film with ID " + filmId + " not found")))
-                .sorted((f1, f2) -> Integer.compare(f2.getLikesCount(), f1.getLikesCount()))
-                .collect(Collectors.toList());
-
-        // Загружаем жанры для каждого фильма
-        if (!commonFilms.isEmpty()) {
-            Map<Integer, List<Genre>> filmGenres = genreService.getGenresForFilms(
-                    commonFilms.stream().map(Film::getId).collect(Collectors.toList())
-            );
-            commonFilms.forEach(film -> film.setGenres(filmGenres.getOrDefault(film.getId(), new ArrayList<>())));
+            films.forEach(film -> {
+                film.setGenres(filmGenres.getOrDefault(film.getId(), new ArrayList<>()));
+                film.setDirectors(directorService.getFilmDirectors(film.getId()));
+            });
         }
 
-        log.info("Found {} common films between user {} and user {}", commonFilms.size(), userId, friendId);
-        return commonFilms;
+        return films;
     }
+
 
     private void validateFilm(Film film) {
         if (film.getReleaseDate().isBefore(CINEMA_BIRTHDAY)) {
