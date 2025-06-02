@@ -29,7 +29,7 @@ public class ReviewServiceImpl implements ReviewService {
         validateUserAndFilm(review.getUserId(), review.getFilmId());
 
         Review createdReview = reviewStorage.create(review);
-        userService.addEvent(review.getUserId(), review.getReviewId(), "REVIEW", "ADD");
+        userService.addEvent(review.getUserId(), createdReview.getReviewId(), "REVIEW", "ADD");
         log.info("Created review: {}", createdReview);
         return createdReview;
     }
@@ -39,9 +39,9 @@ public class ReviewServiceImpl implements ReviewService {
         validateReview(review);
         findReviewById(review.getReviewId());
         validateUserAndFilm(review.getUserId(), review.getFilmId());
-
         Review updatedReview = reviewStorage.update(review);
-        userService.addEvent(review.getUserId(), review.getReviewId(), "REVIEW", "UPDATE");
+        userService.addEvent(updatedReview.getUserId(), updatedReview.getReviewId(),
+                "REVIEW", "UPDATE");
         log.info("Updated review: {}", updatedReview);
         return updatedReview;
     }

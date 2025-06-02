@@ -27,7 +27,7 @@ public class EventStorageDb implements EventStorage {
 
     @Override
     public List<Event> get(int id) {
-        String sql = "SELECT * FROM events WHERE user_id = ? ORDER BY timestamp";
+        String sql = "SELECT * FROM events WHERE user_id = ? ORDER BY timestamp ASC";
         return jdbcTemplate.query(sql, this::makeEvent, id);
     }
 

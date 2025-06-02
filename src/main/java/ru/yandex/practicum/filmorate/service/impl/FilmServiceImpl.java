@@ -1,26 +1,21 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.service.*;
+import ru.yandex.practicum.filmorate.storage.DirectorStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.service.DirectorService;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.GenreService;
-import ru.yandex.practicum.filmorate.service.MpaService;
-import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.DirectorStorage;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 @Service
 @RequiredArgsConstructor
@@ -120,9 +115,8 @@ public class FilmServiceImpl implements FilmService {
     public void addLike(int filmId, int userId) {
         validateFilmExists(filmId);
         validateUserExists(userId);
-
-        filmStorage.addLike(filmId, userId);
         userService.addEvent(userId, filmId, "LIKE", "ADD");
+        filmStorage.addLike(filmId, userId);
         log.info("User {} liked film {}", userId, filmId);
     }
 
@@ -168,7 +162,7 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getFilmsByDirectorOrderBy(Long directorId, String sortBy) {
-        directorStorage.getDirector(directorId).orElseThrow(() -> new NotFoundException("Режисер id=" + directorId +" не найден"));
+        directorStorage.getDirector(directorId).orElseThrow(() -> new NotFoundException("Режисер id=" + directorId + " не найден"));
         List<Film> films = filmStorage.getFilmsByDirectorOrderBy(directorId, sortBy);
 
         if (!films.isEmpty()) {
