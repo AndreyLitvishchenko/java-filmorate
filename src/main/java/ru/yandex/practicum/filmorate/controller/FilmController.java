@@ -1,23 +1,14 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import java.util.List;
-
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/films")
@@ -64,7 +55,19 @@ public class FilmController {
 
     @GetMapping("/director/{directorId}")
     public List<Film> getFilmsByDirector(@PathVariable Long directorId,
-            @RequestParam(value = "sortBy", defaultValue = "likes") String sortBy) {
+                                         @RequestParam(value = "sortBy", defaultValue = "likes") String sortBy) {
         return filmService.getFilmsByDirectorOrderBy(directorId, sortBy);
     }
+
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(@RequestParam int userId, @RequestParam int friendId) {
+        return filmService.getCommonFilms(userId, friendId);
+    }
+
+    @DeleteMapping("/{id}")
+    public void removeFilm(@PathVariable int id) {
+        filmService.removeFilm(id);
+    }
+
+
 }

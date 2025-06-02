@@ -1,22 +1,21 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.mapper.FilmMapper;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 @Repository
 @Slf4j
@@ -32,7 +31,7 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     "INSERT INTO films (name, description, release_date, duration, mpa_id) VALUES (?, ?, ?, ?, ?)",
-                    new String[] { "film_id" });
+                    new String[]{"film_id"});
             ps.setString(1, film.getName());
             ps.setString(2, film.getDescription());
             ps.setDate(3, Date.valueOf(film.getReleaseDate()));
@@ -148,5 +147,18 @@ public class FilmDbStorage implements FilmStorage {
     public List<Integer> getLikedFilms(int userId) {
         String sql = "SELECT film_id FROM likes WHERE user_id = ?";
         return jdbcTemplate.queryForList(sql, Integer.class, userId);
+    }
+
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        String sql = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, m.name as mpa_name " +
+                "FROM likes t1 " +
+                "INNER JOIN likes t2 ON t1.film_id = t2.film_id " +
+                "INNER JOIN films f ON t1.film_id = f.film_id " +
+                "INNER JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "WHERE t1.user_id = ? AND t2.user_id = ? " +
+                "GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, m.name " +
+                "ORDER BY COUNT(t1.user_id) DESC";
+        return jdbcTemplate.query(sql, filmMapper, userId, friendId);
     }
 }
