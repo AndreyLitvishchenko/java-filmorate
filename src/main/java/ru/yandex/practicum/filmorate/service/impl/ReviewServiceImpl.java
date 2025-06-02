@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.ReviewService;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -20,6 +21,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewStorage reviewStorage;
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
+    private final UserService userService;
 
     @Override
     public Review create(Review review) {
@@ -27,6 +29,7 @@ public class ReviewServiceImpl implements ReviewService {
         validateUserAndFilm(review.getUserId(), review.getFilmId());
 
         Review createdReview = reviewStorage.create(review);
+        userService.addEvent(review.getUserId(), review.getReviewId(), "REVIEW", "ADD");
         log.info("Created review: {}", createdReview);
         return createdReview;
     }
@@ -38,6 +41,7 @@ public class ReviewServiceImpl implements ReviewService {
         validateUserAndFilm(review.getUserId(), review.getFilmId());
 
         Review updatedReview = reviewStorage.update(review);
+        userService.addEvent(review.getUserId(), review.getReviewId(), "REVIEW", "UPDATE");
         log.info("Updated review: {}", updatedReview);
         return updatedReview;
     }
@@ -46,6 +50,7 @@ public class ReviewServiceImpl implements ReviewService {
     public void delete(int id) {
         Review review = findReviewById(id);
         reviewStorage.delete(id);
+        userService.addEvent(review.getUserId(), review.getReviewId(), "REVIEW", "REMOVE");
         log.info("Deleted review with ID: {}", id);
     }
 
