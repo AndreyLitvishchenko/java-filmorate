@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.impl;
 
 import java.util.List;
 
@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 
 @Service
