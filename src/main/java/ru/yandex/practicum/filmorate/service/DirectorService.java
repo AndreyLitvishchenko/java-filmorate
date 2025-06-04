@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import java.util.List;
+import java.util.Map;
 
 import ru.yandex.practicum.filmorate.model.Director;
 
@@ -20,4 +21,6 @@ public interface DirectorService {
     void updateFilmDirectors(int filmId, List<Director> directors);
 
     List<Director> getFilmDirectors(int filmId);
+
+    Map<Integer, List<Director>> getDirectorsForFilms(List<Integer> filmIds);
 }

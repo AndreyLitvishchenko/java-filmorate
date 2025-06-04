@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -63,5 +65,13 @@ public class DirectorServiceImpl implements DirectorService {
     @Override
     public List<Director> getFilmDirectors(int filmId) {
         return directorStorage.getFilmDirectors(filmId);
+    }
+
+    @Override
+    public Map<Integer, List<Director>> getDirectorsForFilms(List<Integer> filmIds) {
+        if (filmIds == null || filmIds.isEmpty()) {
+            return new HashMap<>();
+        }
+        return directorStorage.getDirectorsForFilms(filmIds);
     }
 }

@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -95,16 +96,19 @@ class FilmServiceImplTest {
         List<Integer> filmIds = List.of(1);
         Map<Integer, List<Genre>> filmGenres = new HashMap<>();
         filmGenres.put(1, genres);
+        Map<Integer, List<Director>> filmDirectors = new HashMap<>();
+        filmDirectors.put(1, new ArrayList<>());
 
         when(filmStorage.findAll()).thenReturn(films);
         when(genreService.getGenresForFilms(filmIds)).thenReturn(filmGenres);
-        when(directorService.getFilmDirectors(anyInt())).thenReturn(new ArrayList<>());
+        when(directorService.getDirectorsForFilms(filmIds)).thenReturn(filmDirectors);
 
         List<Film> result = filmService.getAllFilms();
 
         assertEquals(1, result.size());
         assertEquals(genres, result.get(0).getGenres());
         verify(genreService).getGenresForFilms(filmIds);
+        verify(directorService).getDirectorsForFilms(filmIds);
     }
 
     @Test
@@ -113,16 +117,19 @@ class FilmServiceImplTest {
         List<Integer> filmIds = List.of(1);
         Map<Integer, List<Genre>> filmGenres = new HashMap<>();
         filmGenres.put(1, genres);
+        Map<Integer, List<Director>> filmDirectors = new HashMap<>();
+        filmDirectors.put(1, new ArrayList<>());
 
         when(filmStorage.getMostPopularFilms(anyInt())).thenReturn(films);
         when(genreService.getGenresForFilms(filmIds)).thenReturn(filmGenres);
-        when(directorService.getFilmDirectors(anyInt())).thenReturn(new ArrayList<>());
+        when(directorService.getDirectorsForFilms(filmIds)).thenReturn(filmDirectors);
 
         List<Film> result = filmService.getPopularFilms(10, null, null);
 
         assertEquals(1, result.size());
         assertEquals(genres, result.get(0).getGenres());
         verify(genreService).getGenresForFilms(filmIds);
+        verify(directorService).getDirectorsForFilms(filmIds);
     }
 
     @Test

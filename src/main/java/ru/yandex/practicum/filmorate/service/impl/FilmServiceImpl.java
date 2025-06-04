@@ -12,12 +12,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.service.*;
+import ru.yandex.practicum.filmorate.service.DirectorService;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.GenreService;
+import ru.yandex.practicum.filmorate.service.MpaService;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-
 
 @Service
 @RequiredArgsConstructor
@@ -103,10 +107,11 @@ public class FilmServiceImpl implements FilmService {
                     .toList();
 
             Map<Integer, List<Genre>> filmGenres = genreService.getGenresForFilms(filmIds);
+            Map<Integer, List<Director>> filmDirectors = directorService.getDirectorsForFilms(filmIds);
 
             films.forEach(film -> {
                 film.setGenres(filmGenres.getOrDefault(film.getId(), new ArrayList<>()));
-                film.setDirectors(directorService.getFilmDirectors(film.getId()));
+                film.setDirectors(filmDirectors.getOrDefault(film.getId(), new ArrayList<>()));
             });
         }
 
@@ -152,10 +157,11 @@ public class FilmServiceImpl implements FilmService {
                     .toList();
 
             Map<Integer, List<Genre>> filmGenres = genreService.getGenresForFilms(filmIds);
+            Map<Integer, List<Director>> filmDirectors = directorService.getDirectorsForFilms(filmIds);
 
             films.forEach(film -> {
                 film.setGenres(filmGenres.getOrDefault(film.getId(), new ArrayList<>()));
-                film.setDirectors(directorService.getFilmDirectors(film.getId()));
+                film.setDirectors(filmDirectors.getOrDefault(film.getId(), new ArrayList<>()));
             });
         }
 
@@ -174,10 +180,11 @@ public class FilmServiceImpl implements FilmService {
                     .toList();
 
             Map<Integer, List<Genre>> filmGenres = genreService.getGenresForFilms(filmIds);
+            Map<Integer, List<Director>> filmDirectors = directorService.getDirectorsForFilms(filmIds);
 
             films.forEach(film -> {
                 film.setGenres(filmGenres.getOrDefault(film.getId(), new ArrayList<>()));
-                film.setDirectors(directorService.getFilmDirectors(film.getId()));
+                film.setDirectors(filmDirectors.getOrDefault(film.getId(), new ArrayList<>()));
             });
         }
 
@@ -199,10 +206,11 @@ public class FilmServiceImpl implements FilmService {
                     .toList();
 
             Map<Integer, List<Genre>> filmGenres = genreService.getGenresForFilms(filmIds);
+            Map<Integer, List<Director>> filmDirectors = directorService.getDirectorsForFilms(filmIds);
 
             films.forEach(film -> {
                 film.setGenres(filmGenres.getOrDefault(film.getId(), new ArrayList<>()));
-                film.setDirectors(directorService.getFilmDirectors(film.getId()));
+                film.setDirectors(filmDirectors.getOrDefault(film.getId(), new ArrayList<>()));
             });
         }
 
@@ -219,10 +227,11 @@ public class FilmServiceImpl implements FilmService {
                     .toList();
 
             Map<Integer, List<Genre>> filmGenres = genreService.getGenresForFilms(filmIds);
+            Map<Integer, List<Director>> filmDirectors = directorService.getDirectorsForFilms(filmIds);
 
             films.forEach(film -> {
                 film.setGenres(filmGenres.getOrDefault(film.getId(), new ArrayList<>()));
-                film.setDirectors(directorService.getFilmDirectors(film.getId()));
+                film.setDirectors(filmDirectors.getOrDefault(film.getId(), new ArrayList<>()));
             });
         }
 
