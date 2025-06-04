@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -10,8 +11,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.EventStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 @Service
@@ -19,6 +22,7 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
+    private final EventStorage eventStorage;
 
     @Override
     public User createUser(User user) {
@@ -59,6 +63,7 @@ public class UserServiceImpl implements UserService {
         validateUserExists(friendId);
 
         userStorage.addFriend(userId, friendId);
+        addEvent(userId, friendId, "FRIEND", "ADD");
         log.info("User {} added friend {}", userId, friendId);
     }
 
@@ -68,6 +73,7 @@ public class UserServiceImpl implements UserService {
         validateUserExists(friendId);
 
         userStorage.removeFriend(userId, friendId);
+        addEvent(userId, friendId, "FRIEND", "REMOVE");
         log.info("User {} removed friend {}", userId, friendId);
     }
 
@@ -79,11 +85,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void removeUser(int id) {
+        validateUserExists(id);
+        userStorage.removeUser(id);
+    }
+
+    @Override
     public List<User> getCommonFriends(int userId, int otherUserId) {
         validateUserExists(userId);
         validateUserExists(otherUserId);
 
         return userStorage.getCommonFriends(userId, otherUserId);
+    }
+
+    @Override
+    public void addEvent(int userId, int entityId, String eventType, String eventOperation) {
+        eventStorage.add(Instant.now(), userId, entityId, eventType, eventOperation);
+    }
+
+    @Override
+    public List<Event> getEvents(int id) {
+        validateUserExists(id);
+        return eventStorage.get(id);
     }
 
     private void validateUser(User user) {

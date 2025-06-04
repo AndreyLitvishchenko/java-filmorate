@@ -1,9 +1,10 @@
 package ru.yandex.practicum.filmorate.service;
 
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.User;
+
 import java.util.List;
 import java.util.Optional;
-
-import ru.yandex.practicum.filmorate.model.User;
 
 public interface UserService {
 
@@ -22,4 +23,10 @@ public interface UserService {
     List<User> getFriends(int userId);
 
     List<User> getCommonFriends(int userId, int otherUserId);
+
+    void removeUser(int id);
+
+    void addEvent(int userId, int entityId, String eventType, String eventOperation);
+
+    List<Event> getEvents(int id);
 }
